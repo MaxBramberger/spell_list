@@ -11,16 +11,21 @@ We want to make a static web app, that uses client side persistence with indexed
 - The app MUST enable JSON import and export of created spell lists
 - The app MUST contain a character creation interface as to manage spell lists for multiple characters
 
-### Collaboration
+## Collaboration
 
-#### Feature branches
+### Feature branches
 
 A feature branch workflow is preferred. See [Feature Branch Workflow Tutorial](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow).
 
-#### Kanban
+### Kanban
 
 Please find a Kanban board here:
 https://trello.com/b/w5t6xQAX/spell-list-app
+
+## Deployment
+
+The app is deployed [here](https://maxbramberger.github.io/spell_list/).  
+Deployment happens via github-actions. The workflow triggers whenever a pull request on master is merged.
 
 ## React
 
