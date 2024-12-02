@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master  # Deploy when changes are pushed to the `master` branch
-  pull-request:
+  pull_request:
     branches:
       - master
 
