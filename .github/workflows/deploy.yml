@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - master  # Deploy when changes are pushed to the `master` branch
-  pull_request:
-    branches:
-      - master
 
 jobs:
   build-deploy:
