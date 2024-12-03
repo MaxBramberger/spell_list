@@ -1,8 +1,9 @@
 import React, {JSX, useEffect, useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
-import {getSpellList$, Spell} from "./SpellListService";
+import {fetchSpells, getSpellList$} from "./SpellListService";
 import {SRDImporter} from "./SRDImporter";
+import {Spell} from "./db/Db";
 
 
 function SpellEntry(spell: Spell) : JSX.Element{
@@ -31,6 +32,8 @@ function App() {
 
     return () => subscription.unsubscribe(); // Cleanup subscription on unmount
   }, []);
+
+  fetchSpells().then();
 
   return (
     <div className="App">

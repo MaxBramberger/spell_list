@@ -1,5 +1,6 @@
-import {importSpells, Spell, SpellComponent} from "./SpellListService";
+import {importSpells} from "./SpellListService";
 import React, {JSX, useState} from "react";
+import {Spell, SpellComponent} from "./db/Db";
 
 interface SpellFromDb {
     index: string;
