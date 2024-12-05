@@ -1,9 +1,12 @@
 import React, {JSX, useEffect, useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
-import {fetchSpells, getSpellList$} from "./SpellListService";
+import {fetchSpells, getSpellList$} from "./service/SpellListService";
 import {SRDImporter} from "./SRDImporter";
 import {Spell} from "./db/Db";
+import {Route, BrowserRouter as Router, Routes} from "react-router-dom";
+import {CharacterTable} from "./characters/characterTable";
+import {CreateCharacter} from "./characters/createCharacter";
 
 
 function SpellEntry(spell: Spell) : JSX.Element{
@@ -24,7 +27,7 @@ function SpellEntry(spell: Spell) : JSX.Element{
   );
 }
 
-function App() {
+function LandingPage(){
   const [spells, setSpells] = useState<Spell[]>([]);
 
   useEffect(() => {
@@ -34,10 +37,8 @@ function App() {
   }, []);
 
   fetchSpells().then();
-
   return (
-    <div className="App">
-      <header className="App-header">
+      <div className="App">
         <img src={logo} className="App-logo" alt="logo"/>
         <SRDImporter/>
         <p>
@@ -46,7 +47,23 @@ function App() {
         <ul>
           {spells.map(spell => (<SpellEntry {...spell} />))}
         </ul>
-      </header>
+      </div>
+  )
+}
+
+function CharacterSelect(){
+
+}
+
+function App() {
+  return (
+      <div className="App App-header">
+        <Router>
+          <Routes>
+            <Route path="/" element={<CharacterTable/>}/>
+            <Route path="/create-character" element={<CreateCharacter/>}/>
+        </Routes>
+      </Router>
     </div>
   );
 }

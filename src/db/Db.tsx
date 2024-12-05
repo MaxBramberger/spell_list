@@ -20,14 +20,30 @@ export interface Spell {
     subclasses: string[]
 }
 
+export interface SpellList {
+    listType: string;
+    spells: Spell[];
+}
+
+export interface Character {
+    id?: number;
+    name: string;
+    class: string;
+    lists: SpellList[]
+}
+
 class SpellDatabase extends Dexie {
     spells!: Table<Spell, string>; // Table name and primary key type
+    characters!: Table<Character, number>;
 
     constructor() {
         super('SpellDatabase');
         this.version(1).stores({
             spells: 'index, name', // Primary key and indexes
         });
+        this.version(2).stores({
+            characters: '++id, name'
+        })
     }
 }
 

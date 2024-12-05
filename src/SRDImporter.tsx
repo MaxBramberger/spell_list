@@ -1,4 +1,4 @@
-import {importSpells} from "./SpellListService";
+import {importSpells} from "./service/SpellListService";
 import React, {JSX, useState} from "react";
 import {Spell, SpellComponent} from "./db/Db";
 

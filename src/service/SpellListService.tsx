@@ -1,5 +1,5 @@
 import {BehaviorSubject} from "rxjs";
-import {db, Spell} from "./db/Db";
+import {db, Spell} from "../db/Db";
 
 const spellList$: BehaviorSubject<Spell[]> = new BehaviorSubject<Spell[]>([]);
 
