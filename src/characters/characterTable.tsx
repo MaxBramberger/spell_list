@@ -16,8 +16,8 @@ import {
 
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {Character} from "../db/Db";
 import {deleteCharacter, fetchCharacters, getCharacters$} from "../service/CharacterService";
+import {Character} from "../db/Types";
 
 export const CharacterTable: React.FC = () => {
     const [characters, setCharacters] = useState<Character[]>([]);

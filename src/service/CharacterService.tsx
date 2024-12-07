@@ -1,5 +1,6 @@
 import { BehaviorSubject} from "rxjs";
-import {Character, db} from "../db/Db";
+import {db} from "../db/Db";
+import {Character} from "../db/Types";
 
 const characters$: BehaviorSubject<Character[]> = new BehaviorSubject<Character[]>([]);
 
