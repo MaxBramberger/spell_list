@@ -8,7 +8,7 @@ import {CreateCharacter} from "./characters/createCharacter";
 function App() {
   return (
       <div className="App App-header">
-        <Router>
+        <Router basename="/spell_list">
           <Routes>
             <Route path="/" element={<CharacterTable/>}/>
             <Route path="/create-character" element={<CreateCharacter/>}/>
