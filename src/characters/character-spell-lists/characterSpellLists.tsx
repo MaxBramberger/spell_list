@@ -39,31 +39,31 @@ export function CharacterSpellLists () {
     const [activeTab, setActiveTab] = useState<SpellListType>("ALL");
 
     const [character, setCharacter] = useState<Character>();
-    const params = useParams()
 
     const [spells, setSpells] = useState<Spell[]>([]);
 
-    fetchSpells();
+    const params = useParams()
 
     useEffect(() => {
+        fetchSpells();
+        const charId = parseInt(params.id ? params.id : '');
+        getCharacter(charId).then(character => setCharacter(character));
         const subscription = getSpellList$().subscribe(setSpells); // Subscribe to the counter observable
 
         return () => subscription.unsubscribe(); // Cleanup subscription on unmount
-    }, []);
+    }, [params.id]);
 
 
     const handleTabChange = (event: any, newValue: SpellListType) => {
         setActiveTab(newValue);
     };
-    const navigate = useNavigate();
 
-    const charId = parseInt(params.id ? params.id : '');
-    getCharacter(charId).then(character => setCharacter(character));
+    const navigate = useNavigate();
 
     const filteredData = spells.filter(row => character ? tableFilters[activeTab](row, character) : true).sort((a, b) => a.level - b.level);
 
     return (
-    <div>
+    <div className='page-container'>
         <AppBar position="static">
             <Toolbar className='tool-bar'>
                 <IconButton
@@ -86,12 +86,12 @@ export function CharacterSpellLists () {
                 textColor="primary"
                 centered
             >
-                <Tab label={spellListTypeDisplayDict['ALL']} value="ALL" />
                 <Tab label={spellListTypeDisplayDict['CLASS']} value="CLASS" />
+                <Tab label={spellListTypeDisplayDict['ALL']} value="ALL" />
             </Tabs>
         </Paper>
 
-        <TableContainer component={Paper} style={{ marginTop: "16px" }}>
+        <TableContainer component={Paper} className='table'>
             <Table>
                 <TableHead>
                     <TableRow>
@@ -99,7 +99,7 @@ export function CharacterSpellLists () {
                         <TableCell>Name</TableCell>
                     </TableRow>
                 </TableHead>
-                <TableBody>
+                <TableBody className='body'>
                     {filteredData.map((item) => (
                         <TableRow key={item.index}>
                             <TableCell>{item.level}</TableCell>

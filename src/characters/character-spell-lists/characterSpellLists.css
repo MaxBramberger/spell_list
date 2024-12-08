@@ -6,3 +6,22 @@
     display: flex;
     justify-content: space-around;
 }
+
+.table{
+    margin-top: 16px;
+    overflow: auto;
+}
+
+.page-container{
+    max-height: 100vh;
+    flex-direction: column;
+    display: flex;
+}
+
+table thead th {
+    position: sticky;
+    top: 0; /* Stick to the top of the container */
+    z-index: 2; /* Ensure it appears above other content */
+    background-color: white; /* Background color to prevent transparency */
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); /* Optional shadow for better visual separation */
+}
