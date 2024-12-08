@@ -1,6 +1,39 @@
+import {
+    mdiAutoFix,
+    mdiFire,
+    mdiLinkVariant,
+    mdiMusic,
+    mdiPaw,
+    mdiPineTree,
+    mdiShieldHalfFull,
+    mdiStarOutline
+} from "@mdi/js";
+
 export type SpellComponent = 'V' | 'S' | 'M';
 
 export type CharacterClass = 'Bard' | 'Cleric' | 'Druid' | 'Paladin' | 'Ranger' | 'Sorcerer' | 'Warlock' | 'Wizard';
+
+export const charClassDict: { [K in CharacterClass]: K} = {
+    Bard: "Bard",
+    Cleric: "Cleric",
+    Druid: "Druid",
+    Paladin: "Paladin",
+    Ranger: "Ranger",
+    Sorcerer: "Sorcerer",
+    Warlock: "Warlock",
+    Wizard: "Wizard"
+}
+
+export const classIcons: { [K in CharacterClass]: string} = {
+    Bard: mdiMusic,
+    Cleric: mdiStarOutline,
+    Druid: mdiPaw,
+    Paladin: mdiShieldHalfFull,
+    Ranger: mdiPineTree,
+    Sorcerer: mdiFire,
+    Warlock: mdiLinkVariant,
+    Wizard: mdiAutoFix
+}
 
 export interface Spell {
     index: string;
@@ -20,14 +53,14 @@ export interface Spell {
     subclasses: string[]
 }
 
-export interface SpellList {
+export interface CharacterSpellList {
     listType: string;
-    spells: Spell[];
+    spellIndices: string[];
 }
 
 export interface Character {
     id?: number;
     name: string;
-    class: string;
-    lists: SpellList[]
+    class: CharacterClass;
+    lists: CharacterSpellList[]
 }

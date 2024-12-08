@@ -1,0 +1,7 @@
+.class-icon{
+    height: 24px;
+}
+
+tr.body-row:hover{
+    background-color: #e1e1e1;
+}

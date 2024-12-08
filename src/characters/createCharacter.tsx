@@ -5,27 +5,42 @@ import {
     Toolbar,
     Typography,
     Button,
-    TextField,
     Container,
+    TextField,
+    MenuItem,
+    Select,
+    FormControl,
+    InputLabel,
+    IconButton
 } from "@mui/material";
 import {addCharacter} from "../service/CharacterService";
+import {CharacterClass, charClassDict} from "../db/Types";
+import Icon from "@mdi/react";
+import {mdiChevronLeft} from "@mdi/js";
 
 export const CreateCharacter: React.FC = () => {
     const navigate = useNavigate();
 
     // State to store the character name
-    const [characterName, setCharacterName] = useState<string>("");
+    const [characterName, setCharacterName] = useState<string >("");
+
+    // State to store the selected character class
+    const [characterClass, setCharacterClass] = useState<CharacterClass | null>(null);
+
+    const classes = Object.values(charClassDict);
 
     const handleCreateCharacter = async () => {
-        if (characterName.trim()) {
+        if (characterName.trim() && characterClass) {
             await addCharacter({
-                class: '',
+                class: characterClass,
                 name: characterName,
                 lists: []
-            })
+            });
             setCharacterName("");
+            setCharacterClass(null);
+            navigate("/");
         } else {
-            alert("Please enter a valid character name.");
+            alert("Please enter a valid character name and select a class.");
         }
     };
 
@@ -34,12 +49,12 @@ export const CreateCharacter: React.FC = () => {
             {/* Header */}
             <AppBar position="static">
                 <Toolbar>
+                    <IconButton color="inherit" onClick={() => navigate("/")}>
+                        <Icon path={mdiChevronLeft} size={1}></Icon>
+                    </IconButton>
                     <Typography variant="h6" style={{ flexGrow: 1 }}>
                         Create a Character
                     </Typography>
-                    <Button color="inherit" onClick={() => navigate("/")}>
-                        Back
-                    </Button>
                 </Toolbar>
             </AppBar>
 
@@ -53,10 +68,24 @@ export const CreateCharacter: React.FC = () => {
                     value={characterName}
                     onChange={(e) => setCharacterName(e.target.value)}
                 />
+                <FormControl fullWidth margin="normal">
+                    <InputLabel id="character-class-label">Character Class</InputLabel>
+                    <Select
+                        labelId="character-class-label"
+                        value={characterClass}
+                        onChange={(e) => setCharacterClass(e.target.value as CharacterClass)}
+                        variant="outlined"
+                    >
+                        { classes.map(charClass =>
+                            (<MenuItem value={charClass}> {charClass}</MenuItem>)
+                        )}
+                    </Select>
+                </FormControl>
                 <Button
                     variant="contained"
                     color="primary"
                     style={{ marginTop: "10px" }}
+                    disabled={!characterClass || !characterName.trim()}
                     onClick={handleCreateCharacter}
                 >
                     Create Character

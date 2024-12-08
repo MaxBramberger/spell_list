@@ -16,8 +16,10 @@ import {
 
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {deleteCharacter, fetchCharacters, getCharacters$} from "../service/CharacterService";
-import {Character} from "../db/Types";
+import {deleteCharacter, fetchCharacters, getCharacters$} from "../../service/CharacterService";
+import {Character, classIcons} from "../../db/Types";
+import Icon from "@mdi/react";
+import './characterTable.css';
 
 export const CharacterTable: React.FC = () => {
     const [characters, setCharacters] = useState<Character[]>([]);
@@ -54,16 +56,18 @@ export const CharacterTable: React.FC = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
+                            <TableCell></TableCell>
                             <TableCell>Name</TableCell>
+                            <TableCell>Class</TableCell>
                             <TableCell>Delete</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {characters.map((character) => (
-                            <TableRow key={character.id}>
-                                <TableCell>{character.id}</TableCell>
-                                <TableCell>{character.name}</TableCell>
+                            <TableRow className='body-row' key={character.id}>
+                                <TableCell><Icon className='class-icon' path={classIcons[character.class]}></Icon></TableCell>
+                                <TableCell>{character.name} </TableCell>
+                                <TableCell>{character.class}</TableCell>
                                 <TableCell>{<IconButton onClick={() => deleteCharacter(character.id)}><DeleteIcon/></IconButton>}</TableCell>
                             </TableRow>
                         ))}

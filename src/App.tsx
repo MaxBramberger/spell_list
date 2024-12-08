@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import {Route, BrowserRouter as Router, Routes} from "react-router-dom";
-import {CharacterTable} from "./characters/characterTable";
+import {CharacterTable} from "./characters/character-table/characterTable";
 import {CreateCharacter} from "./characters/createCharacter";
 
 
