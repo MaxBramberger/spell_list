@@ -19,6 +19,10 @@ export const getCharacters$ = () => {
     return characters$.asObservable();
 };
 
+export const getCharacter = (id: number) => {
+    return db.characters.get(id);
+}
+
 export const deleteCharacter = async (id?: number) => {
     if(id!==undefined){
         db.characters.delete(id);

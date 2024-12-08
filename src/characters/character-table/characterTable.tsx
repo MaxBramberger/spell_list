@@ -33,6 +33,15 @@ export const CharacterTable: React.FC = () => {
         return () => subscription.unsubscribe(); // Cleanup subscription on unmount
     }, []);
 
+    const handleRowClick = (row: Character) => {
+        navigate(`/character/${row.id}`)
+    };
+
+    const handleDeleteClick = async (row: Character, event: MouseEvent) => {
+        event.stopPropagation();
+        await deleteCharacter(row.id);
+    }
+
 
     return (
         <div>
@@ -64,11 +73,11 @@ export const CharacterTable: React.FC = () => {
                     </TableHead>
                     <TableBody>
                         {characters.map((character) => (
-                            <TableRow className='body-row' key={character.id}>
+                            <TableRow className='body-row' key={character.id} onClick={() => handleRowClick(character)}>
                                 <TableCell><Icon className='class-icon' path={classIcons[character.class]}></Icon></TableCell>
                                 <TableCell>{character.name} </TableCell>
                                 <TableCell>{character.class}</TableCell>
-                                <TableCell>{<IconButton onClick={() => deleteCharacter(character.id)}><DeleteIcon/></IconButton>}</TableCell>
+                                <TableCell>{<IconButton onClick={(e) => handleDeleteClick(character, e as unknown as MouseEvent)}><DeleteIcon/></IconButton>}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
