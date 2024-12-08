@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/spell_list/static/css/main.c74ef164.css",
-    "main.js": "/spell_list/static/js/main.d453600a.js",
+    "main.js": "/spell_list/static/js/main.9854fad1.js",
     "static/js/453.66ab80a2.chunk.js": "/spell_list/static/js/453.66ab80a2.chunk.js",
     "index.html": "/spell_list/index.html",
     "main.c74ef164.css.map": "/spell_list/static/css/main.c74ef164.css.map",
-    "main.d453600a.js.map": "/spell_list/static/js/main.d453600a.js.map",
+    "main.9854fad1.js.map": "/spell_list/static/js/main.9854fad1.js.map",
     "453.66ab80a2.chunk.js.map": "/spell_list/static/js/453.66ab80a2.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.c74ef164.css",
-    "static/js/main.d453600a.js"
+    "static/js/main.9854fad1.js"
   ]
 }
