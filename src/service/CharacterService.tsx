@@ -1,4 +1,4 @@
-import { BehaviorSubject} from "rxjs";
+import {BehaviorSubject, from} from "rxjs";
 import {db} from "../db/Db";
 import {Character} from "../db/Types";
 
@@ -15,12 +15,17 @@ export const addCharacter =  async ( character: Omit<Character, 'id'>) => {
     fetchCharacters().then()
 }
 
+export const updateCharacter = async (character: Character) => {
+    db.characters.put(character);
+    await fetchCharacters()
+}
+
 export const getCharacters$ = () => {
     return characters$.asObservable();
 };
 
-export const getCharacter = (id: number) => {
-    return db.characters.get(id);
+export const getCharacter$ = (id: number) => {
+    return from(db.characters.get(id));
 }
 
 export const deleteCharacter = async (id?: number) => {

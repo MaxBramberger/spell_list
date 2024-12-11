@@ -53,8 +53,26 @@ export interface Spell {
     subclasses: string[]
 }
 
+export const spellKeyDict: {[K in keyof Spell]: K} = {
+    index: "index",
+    name: "name",
+    desc: "desc",
+    range: "range",
+    components: "components",
+    concentration: "concentration",
+    ritual: "ritual",
+    duration: "duration",
+    casting_time: "casting_time",
+    level: "level",
+    school: "school",
+    classes: "classes",
+    subclasses: "subclasses"
+}
+
+export type SpellListType = 'Known' | 'Prepared' | 'Class' | 'All';
+
 export interface CharacterSpellList {
-    listType: string;
+    listType: SpellListType;
     spellIndices: string[];
 }
 

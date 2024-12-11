@@ -17,6 +17,7 @@ import {addCharacter} from "../service/CharacterService";
 import {CharacterClass, charClassDict} from "../db/Types";
 import Icon from "@mdi/react";
 import {mdiChevronLeft} from "@mdi/js";
+import {CharacterSpellListMapper} from "./characterSpellListMapper";
 
 export const CreateCharacter: React.FC = () => {
     const navigate = useNavigate();
@@ -31,10 +32,11 @@ export const CreateCharacter: React.FC = () => {
 
     const handleCreateCharacter = async () => {
         if (characterName.trim() && characterClass) {
+            const spellLists = new CharacterSpellListMapper(characterClass).getLists()
             await addCharacter({
                 class: characterClass,
                 name: characterName,
-                lists: []
+                lists: spellLists
             });
             setCharacterName("");
             setCharacterClass(null);
