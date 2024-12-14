@@ -5,6 +5,7 @@ import { CharacterTable } from './characters/character-table/characterTable';
 import { CreateCharacter } from './characters/createCharacter';
 import { CharacterSpellLists } from './characters/character-spell-lists/characterSpellLists';
 import { SRDImporter } from './importer/SRDImporter';
+import { SpellView } from './characters/spell-view/spellView';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/create-character" element={<CreateCharacter />} />
           <Route path="/character/:id" element={<CharacterSpellLists />} />
           <Route path="/importer/srd" element={<SRDImporter />}></Route>
+          <Route path="/spell/:index" element={<SpellView />} />
         </Routes>
       </Router>
     </div>

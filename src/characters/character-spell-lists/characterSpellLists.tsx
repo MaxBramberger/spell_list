@@ -241,6 +241,15 @@ export function CharacterSpellLists() {
     }
   };
 
+  const handleSpellClick = (item: Spell) => {
+    const charId = character?.uuid;
+    if (charId) {
+      navigate(`/spell/${item.index}?charId=${charId}`);
+    } else {
+      navigate(`/spell/${item.index}`);
+    }
+  };
+
   const navigate = useNavigate();
 
   return (
@@ -309,7 +318,11 @@ export function CharacterSpellLists() {
           </TableHead>
           <TableBody className="body">
             {displayedSpells.map((item) => (
-              <TableRow key={item.index}>
+              <TableRow
+                key={item.index}
+                className="body-row"
+                onClick={() => handleSpellClick(item)}
+              >
                 <TableCell>{item.level}</TableCell>
                 <TableCell>{item.name}</TableCell>
                 {showPreparedCheckBox && (
