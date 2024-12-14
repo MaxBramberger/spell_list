@@ -1,17 +1,21 @@
-import {CharacterClass, CharacterSpellList} from "../db/Types";
+import {Character, CharacterClassName, SpellListType} from "../db/Types";
 
 
 export class CharacterSpellListMapper {
-    constructor(private characterClass: CharacterClass) {}
 
-    readonly spellPreparingClasses: CharacterClass[] = [
+    private lists: SpellListType[] = [];
+    constructor(private character: Character) {
+        this.initLists();
+    }
+
+    readonly spellPreparingClasses: CharacterClassName[] = [
         "Druid",
         "Cleric",
         "Paladin",
         "Wizard",
     ]
 
-    readonly spellKnownClasses: CharacterClass[] = [
+    readonly spellKnownClasses: CharacterClassName[] = [
         "Wizard",
         "Warlock",
         "Bard",
@@ -19,15 +23,26 @@ export class CharacterSpellListMapper {
         "Sorcerer"
     ]
 
-    getLists(): CharacterSpellList[] {
-        const list : CharacterSpellList[] = [];
-        if(this.spellKnownClasses.includes(this.characterClass)){
-            list.push({listType: "Known", spellIndices: []})
+    private initLists(): void {
+        const list : SpellListType[] = [];
+        const characterHasKnownList = this.spellKnownClasses.some(
+            spellKnownClass => this.character.classes
+                .map(characterClass => characterClass.name).includes(spellKnownClass)
+        );
+        if(characterHasKnownList){
+            list.push('Known');
         }
+        const characterHasPreparedList = this.spellPreparingClasses.some(
+            spellPreparingClass => this.character.classes
+                .map(characterClass => characterClass.name).includes(spellPreparingClass)
+        );
+        if(characterHasPreparedList){
+            list.push('Prepared');
+        }
+        this.lists = list
+    }
 
-        if(this.spellPreparingClasses.includes(this.characterClass)){
-            list.push({listType: "Prepared", spellIndices: []})
-        }
-        return list
+    getLists(): SpellListType[]{
+        return this.lists;
     }
 }

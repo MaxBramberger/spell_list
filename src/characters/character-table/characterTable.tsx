@@ -74,9 +74,9 @@ export const CharacterTable: React.FC = () => {
                     <TableBody>
                         {characters.map((character) => (
                             <TableRow className='body-row' key={character.id} onClick={() => handleRowClick(character)}>
-                                <TableCell><Icon className='class-icon' path={classIcons[character.class]}></Icon></TableCell>
+                                <TableCell>{character.classes.map(characterClass => (<Icon className='class-icon' path={classIcons[characterClass.name]}></Icon>))}</TableCell>
                                 <TableCell>{character.name} </TableCell>
-                                <TableCell>{character.class}</TableCell>
+                                <TableCell>{character.classes.map(characterClass => characterClass.name).join(', ')}</TableCell>
                                 <TableCell>{<IconButton onClick={(e) => handleDeleteClick(character, e as unknown as MouseEvent)}><DeleteIcon/></IconButton>}</TableCell>
                             </TableRow>
                         ))}

@@ -23,19 +23,20 @@ import {Character, classIcons, Spell, SpellListType} from "../../db/Types";
 import './characterSpellLists.css'
 import {fetchSpells, getSpellList$, importSpells} from "../../service/SpellListService";
 import {combineLatest} from "rxjs";
+import {CharacterSpellListMapper} from "../characterSpellListMapper";
 
 
 const tableFilters: {[K in SpellListType]: (x: Spell, char: Character) => boolean} = {
     All: (_x, _y) => true,
-    Class: (spell: Spell, char: Character) => spell.classes.includes(char.class),
+    Class: (spell: Spell, char: Character) => spell.classes.some(spellClass => char.classes.map(charClass => charClass.name).includes(spellClass)),
     Known: (spell: Spell, char: Character) => {
-        const knownList = char.lists.find( list => list.listType === 'Known');
-        return knownList ? knownList.spellIndices.includes(spell.index) : false;
+        const knownList = char.knownSpellIndices;
+        return knownList ? knownList.includes(spell.index) : false;
 
     },
     Prepared: (spell: Spell, char: Character) => {
-        const prepareList = char.lists.find( list => list.listType === 'Prepared');
-        return prepareList ? prepareList.spellIndices.includes(spell.index) : false;
+        const prepareList = char.preparedSpellIndices;
+        return prepareList ? prepareList.includes(spell.index) : false;
 
     }
 };
@@ -49,10 +50,10 @@ function getDisplayedSpells(spells: Spell[], character: Character | undefined, a
     return spells
         .filter(row => character ? tableFilters[activeTab](row, character) : true)
         .sort((a, b) => a.level - b.level).map( spell => {
-            const knownList = character?.lists.find(list => list.listType === 'Known');
-            const known = knownList ? knownList.spellIndices.includes(spell.index) : false;
-            const preparedList = character?.lists.find(list => list.listType === 'Prepared');
-            const prepared = preparedList ? preparedList.spellIndices.includes(spell.index) : false;
+            const knownList = character?.knownSpellIndices;
+            const known = knownList ? knownList.includes(spell.index) : false;
+            const preparedList = character?.preparedSpellIndices;
+            const prepared = preparedList ? preparedList.includes(spell.index) : false;
             return {...spell, known: known, prepared: prepared}
         });
 }
@@ -63,7 +64,7 @@ export function CharacterSpellLists () {
     const [spells, setSpells] = useState<Spell[]>([]);
     const [hasKnownList, setHasKnownList] = useState<boolean>(false);
     const [hasPreparedList, setHasPreparedList] = useState<boolean>(false);
-    const [showKnownCheckBox, setShowKnownCheckBox] = useState<boolean>(true);
+    const [showKnownCheckBox, setShowKnownCheckBox] = useState<boolean>(false);
     const [showPreparedCheckBox, setShowPreparedCheckBox] = useState<boolean>(false);
     const [displayedSpells, setDisplayedSpells] = useState<SpellWithKnownAndPrepared[]>([])
 
@@ -76,23 +77,24 @@ export function CharacterSpellLists () {
             setSpells(newSpells);
             setCharacter(newCharacter);
             if(newCharacter){
-                setHasKnownList(newCharacter.lists.find(list => list.listType === 'Known') !== undefined);
-                setHasPreparedList(newCharacter.lists.find(list => list.listType === 'Prepared') !== undefined)
-            } else {
-                setHasKnownList(false)
+                const spellLists = new CharacterSpellListMapper(newCharacter).getLists();
+                setHasKnownList(spellLists.includes('Known'));
+                setHasPreparedList(spellLists.includes('Prepared'));
+                setShowKnownCheckBox(activeTab !== 'Prepared' && hasKnownList)
+                setShowPreparedCheckBox((activeTab === 'Known' || activeTab === 'Prepared' || !hasKnownList) && hasPreparedList)
             }
             setDisplayedSpells(getDisplayedSpells(newSpells, newCharacter, activeTab));
         }); // Subscribe to the counter observable
 
         return () => subscription.unsubscribe(); // Cleanup subscription on unmount
-    }, [params.id, activeTab]);
+    }, [params.id, activeTab, hasPreparedList, hasKnownList]);
 
 
     const handleTabChange = (event: any, newValue: SpellListType) => {
-        setActiveTab(newValue);
         setShowKnownCheckBox(newValue !== 'Prepared' && hasKnownList)
-        setShowPreparedCheckBox((newValue === 'Known' || newValue === 'Prepared') && hasPreparedList)
+        setShowPreparedCheckBox((newValue === 'Known' || newValue === 'Prepared' || !hasKnownList) && hasPreparedList)
         setDisplayedSpells(getDisplayedSpells(spells, character, newValue))
+        setActiveTab(newValue);
     };
 
     const downloadSpellList = () => {
@@ -158,25 +160,17 @@ export function CharacterSpellLists () {
         const newValue = event.target.checked;
         if(character){
            if(newValue){
-               let knownList = character.lists.find(list => list.listType === 'Known');
-               if(knownList){
-                    const spellIndexSet = new Set(knownList.spellIndices).add(spell.index);
-                    knownList.spellIndices = Array.from(spellIndexSet.values());
-                    await updateCharacter(character);
-               }
+                const spellIndexSet = new Set(character.knownSpellIndices).add(spell.index);
+                character.knownSpellIndices = Array.from(spellIndexSet.values());
+                await updateCharacter(character);
            } else {
-               let knownList = character.lists.find(list => list.listType === 'Known');
-               if(knownList){
-                   const spellIndexSet = new Set(knownList.spellIndices);
-                   spellIndexSet.delete(spell.index);
-                   knownList.spellIndices = Array.from(spellIndexSet.values());
-               }
-               let preparedList = character.lists.find(list => list.listType === 'Prepared');
-               if(preparedList){
-                   const preparedIndexSet = new Set(preparedList.spellIndices);
-                   preparedIndexSet.delete(spell.index);
-                   preparedList.spellIndices = Array.from(preparedIndexSet);
-               }
+               const spellIndexSet = new Set(character.knownSpellIndices);
+               spellIndexSet.delete(spell.index);
+               character.knownSpellIndices = Array.from(spellIndexSet.values());
+
+               const preparedIndexSet = new Set(character.preparedSpellIndices);
+               preparedIndexSet.delete(spell.index);
+               character.preparedSpellIndices = Array.from(preparedIndexSet);
                await updateCharacter(character)
            }
            setDisplayedSpells(getDisplayedSpells(spells, character, activeTab));
@@ -188,20 +182,15 @@ export function CharacterSpellLists () {
         const newValue = event.target.checked;
         if(character){
             if(newValue){
-                let preparedList = character.lists.find(list => list.listType === 'Prepared');
-                if(preparedList){
-                    const spellIndexSet = new Set(preparedList.spellIndices).add(spell.index);
-                    preparedList.spellIndices = Array.from(spellIndexSet.values());
-                    await updateCharacter(character);
-                }
+                const spellIndexSet = new Set(character.preparedSpellIndices).add(spell.index);
+                character.preparedSpellIndices = Array.from(spellIndexSet.values());
+                await updateCharacter(character);
+
             } else {
-                let preparedList = character.lists.find(list => list.listType === 'Prepared');
-                if(preparedList){
-                    const spellIndexSet = new Set(preparedList.spellIndices);
-                    spellIndexSet.delete(spell.index);
-                    preparedList.spellIndices = Array.from(spellIndexSet.values());
-                    await updateCharacter(character);
-                }
+                const spellIndexSet = new Set(character.preparedSpellIndices);
+                spellIndexSet.delete(spell.index);
+                character.preparedSpellIndices = Array.from(spellIndexSet.values());
+                await updateCharacter(character);
             }
             setDisplayedSpells(getDisplayedSpells(spells, character, activeTab));
         }
@@ -221,7 +210,7 @@ export function CharacterSpellLists () {
                     <Icon path={mdiChevronLeft} size={1}></Icon>
                 </IconButton>
                 <Typography variant="h6" style={{ flexGrow: 1 }}>
-                    {character ? <Icon path={classIcons[character.class]} className='class-icon' size={1}></Icon> : ''} {character?.name}
+                    {character ? character.classes.map(characterClass => (<Icon className='class-icon' path={classIcons[characterClass.name]}></Icon>)) : ''} {character?.name}
                 </Typography>
                 <Tooltip title='Download spell list'>
                     <IconButton color="inherit" onClick={downloadSpellList}>

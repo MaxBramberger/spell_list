@@ -11,9 +11,14 @@ import {
 
 export type SpellComponent = 'V' | 'S' | 'M';
 
-export type CharacterClass = 'Bard' | 'Cleric' | 'Druid' | 'Paladin' | 'Ranger' | 'Sorcerer' | 'Warlock' | 'Wizard';
+export type CharacterClassName = 'Bard' | 'Cleric' | 'Druid' | 'Paladin' | 'Ranger' | 'Sorcerer' | 'Warlock' | 'Wizard';
 
-export const charClassDict: { [K in CharacterClass]: K} = {
+export interface CharacterClass  {
+    name: CharacterClassName,
+    level: number
+}
+
+export const charClassDict: { [K in CharacterClassName]: K} = {
     Bard: "Bard",
     Cleric: "Cleric",
     Druid: "Druid",
@@ -24,7 +29,7 @@ export const charClassDict: { [K in CharacterClass]: K} = {
     Wizard: "Wizard"
 }
 
-export const classIcons: { [K in CharacterClass]: string} = {
+export const classIcons: { [K in CharacterClassName]: string} = {
     Bard: mdiMusic,
     Cleric: mdiStarOutline,
     Druid: mdiPaw,
@@ -49,7 +54,7 @@ export interface Spell {
     casting_time: string;
     level: number;
     school: string;
-    classes: string[];
+    classes: CharacterClassName[];
     subclasses: string[]
 }
 
@@ -71,14 +76,10 @@ export const spellKeyDict: {[K in keyof Spell]: K} = {
 
 export type SpellListType = 'Known' | 'Prepared' | 'Class' | 'All';
 
-export interface CharacterSpellList {
-    listType: SpellListType;
-    spellIndices: string[];
-}
-
 export interface Character {
     id?: number;
     name: string;
-    class: CharacterClass;
-    lists: CharacterSpellList[]
+    classes: CharacterClass[];
+    knownSpellIndices: string[];
+    preparedSpellIndices: string[];
 }

@@ -1,7 +1,7 @@
 import {importSpells} from "../service/SpellListService";
 import React, {JSX, useState} from "react";
 
-import {Spell, SpellComponent} from "../db/Types";
+import {CharacterClassName, Spell, SpellComponent} from "../db/Types";
 
 interface SpellFromDb {
     index: string;
@@ -39,7 +39,7 @@ export function SRDImporter(): JSX.Element {
                         newData.push({
                             index: spell.index,
                             casting_time: spell.casting_time,
-                            classes: spell.classes.map(myClass => myClass.name),
+                            classes: spell.classes.map(myClass => myClass.name) as CharacterClassName[],
                             components: spell.components,
                             desc: spell.desc,
                             concentration: spell.concentration,

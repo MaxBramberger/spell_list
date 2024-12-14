@@ -14,10 +14,9 @@ import {
     IconButton
 } from "@mui/material";
 import {addCharacter} from "../service/CharacterService";
-import {CharacterClass, charClassDict} from "../db/Types";
+import {CharacterClassName, charClassDict} from "../db/Types";
 import Icon from "@mdi/react";
 import {mdiChevronLeft} from "@mdi/js";
-import {CharacterSpellListMapper} from "./characterSpellListMapper";
 
 export const CreateCharacter: React.FC = () => {
     const navigate = useNavigate();
@@ -26,17 +25,17 @@ export const CreateCharacter: React.FC = () => {
     const [characterName, setCharacterName] = useState<string >("");
 
     // State to store the selected character class
-    const [characterClass, setCharacterClass] = useState<CharacterClass | null>(null);
+    const [characterClass, setCharacterClass] = useState<CharacterClassName | null>(null);
 
     const classes = Object.values(charClassDict);
 
     const handleCreateCharacter = async () => {
         if (characterName.trim() && characterClass) {
-            const spellLists = new CharacterSpellListMapper(characterClass).getLists()
             await addCharacter({
-                class: characterClass,
+                classes: [{name: characterClass, level: 1}],
                 name: characterName,
-                lists: spellLists
+                knownSpellIndices: [],
+                preparedSpellIndices: []
             });
             setCharacterName("");
             setCharacterClass(null);
@@ -75,7 +74,7 @@ export const CreateCharacter: React.FC = () => {
                     <Select
                         labelId="character-class-label"
                         value={characterClass}
-                        onChange={(e) => setCharacterClass(e.target.value as CharacterClass)}
+                        onChange={(e) => setCharacterClass(e.target.value as CharacterClassName)}
                         variant="outlined"
                     >
                         { classes.map(charClass =>
