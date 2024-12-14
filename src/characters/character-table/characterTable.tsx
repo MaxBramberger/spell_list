@@ -34,12 +34,12 @@ export const CharacterTable: React.FC = () => {
     }, []);
 
     const handleRowClick = (row: Character) => {
-        navigate(`/character/${row.id}`)
+        navigate(`/character/${row.uuid}`)
     };
 
     const handleDeleteClick = async (row: Character, event: MouseEvent) => {
         event.stopPropagation();
-        await deleteCharacter(row.id);
+        await deleteCharacter(row.uuid);
     }
 
 
@@ -73,7 +73,7 @@ export const CharacterTable: React.FC = () => {
                     </TableHead>
                     <TableBody>
                         {characters.map((character) => (
-                            <TableRow className='body-row' key={character.id} onClick={() => handleRowClick(character)}>
+                            <TableRow className='body-row' key={character.uuid} onClick={() => handleRowClick(character)}>
                                 <TableCell>{character.classes.map(characterClass => (<Icon className='class-icon' path={classIcons[characterClass.name]}></Icon>))}</TableCell>
                                 <TableCell>{character.name} </TableCell>
                                 <TableCell>{character.classes.map(characterClass => characterClass.name).join(', ')}</TableCell>

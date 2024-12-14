@@ -77,7 +77,7 @@ export const spellKeyDict: {[K in keyof Spell]: K} = {
 export type SpellListType = 'Known' | 'Prepared' | 'Class' | 'All';
 
 export interface Character {
-    id?: number;
+    uuid: string;
     name: string;
     classes: CharacterClass[];
     knownSpellIndices: string[];

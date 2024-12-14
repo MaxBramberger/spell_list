@@ -3,7 +3,7 @@ import {Character, Spell} from "./Types";
 
 class SpellDatabase extends Dexie {
     spells!: Table<Spell, string>; // Table name and primary key type
-    characters!: Table<Character, number>;
+    characters!: Table<Character, string>;
 
     constructor() {
         super('SpellDatabase');
@@ -11,7 +11,7 @@ class SpellDatabase extends Dexie {
             spells: 'index, name', // Primary key and indexes
         });
         this.version(2).stores({
-            characters: '++id, name'
+            characters: 'uuid, name'
         })
     }
 }

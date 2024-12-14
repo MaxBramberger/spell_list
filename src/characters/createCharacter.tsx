@@ -17,6 +17,7 @@ import {addCharacter} from "../service/CharacterService";
 import {CharacterClassName, charClassDict} from "../db/Types";
 import Icon from "@mdi/react";
 import {mdiChevronLeft} from "@mdi/js";
+import { v4 as uuidv4 } from 'uuid';
 
 export const CreateCharacter: React.FC = () => {
     const navigate = useNavigate();
@@ -31,7 +32,9 @@ export const CreateCharacter: React.FC = () => {
 
     const handleCreateCharacter = async () => {
         if (characterName.trim() && characterClass) {
+            const newUuid = uuidv4();
             await addCharacter({
+                uuid: newUuid,
                 classes: [{name: characterClass, level: 1}],
                 name: characterName,
                 knownSpellIndices: [],

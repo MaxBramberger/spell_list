@@ -72,7 +72,7 @@ export function CharacterSpellLists () {
 
     useEffect(() => {
         fetchSpells();
-        const charId = parseInt(params.id ? params.id : '');
+        const charId = params.id ? params.id : '';
         const subscription = combineLatest([getCharacter$(charId), getSpellList$()]).subscribe(([newCharacter, newSpells]) =>{
             setSpells(newSpells);
             setCharacter(newCharacter);

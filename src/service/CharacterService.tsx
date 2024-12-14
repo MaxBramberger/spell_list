@@ -24,11 +24,11 @@ export const getCharacters$ = () => {
     return characters$.asObservable();
 };
 
-export const getCharacter$ = (id: number) => {
-    return from(db.characters.get(id));
+export const getCharacter$ = (uuid: string) => {
+    return from(db.characters.get(uuid));
 }
 
-export const deleteCharacter = async (id?: number) => {
+export const deleteCharacter = async (id: string) => {
     if(id!==undefined){
         db.characters.delete(id);
         await fetchCharacters()
