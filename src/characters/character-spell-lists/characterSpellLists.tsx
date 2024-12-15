@@ -107,7 +107,7 @@ export function CharacterSpellLists() {
     if (rowRef) {
       // Scroll to the row
       rowRef.scrollIntoView({
-        behavior: 'smooth',
+        behavior: 'auto',
         block: 'center',
       });
       setPendingScrollKey(null);
