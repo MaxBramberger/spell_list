@@ -331,6 +331,7 @@ export function CharacterSpellLists() {
                       size="small"
                       checked={item.prepared}
                       onChange={(e) => handlePreparedCheckBoxChange(item, e)}
+                      onClick={(e) => e.stopPropagation()}
                     />
                   </TableCell>
                 )}
@@ -340,6 +341,7 @@ export function CharacterSpellLists() {
                       size="small"
                       checked={item.known}
                       onChange={(e) => handleKnownCheckBoxChange(item, e)}
+                      onClick={(e) => e.stopPropagation()}
                     />
                   </TableCell>
                 )}
