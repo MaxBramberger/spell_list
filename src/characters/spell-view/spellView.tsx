@@ -33,8 +33,17 @@ export const SpellView = () => {
 
   const handleBackwardsClick = () => {
     const charId = searchParams.get('charId');
+    const activeTab = searchParams.get('activeTab');
+
     if (charId) {
-      navigate(`/character/${charId}`);
+      const baseUrl = `/character/${charId}`;
+
+      // Add query parameters conditionally
+      let queryString = '';
+      if (activeTab) queryString += `?activeTab=${activeTab}`;
+      if (spell)
+        queryString += `${queryString ? '&' : '?'}spellIndex=${spell.index}`;
+      navigate(`${baseUrl}${queryString}`);
     } else {
       navigate(`/`);
     }

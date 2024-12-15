@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { getCharacter$, updateCharacter } from '../../service/CharacterService';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -18,7 +18,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Icon from '@mdi/react';
 import { mdiChevronLeft, mdiDownload, mdiUpload } from '@mdi/js';
 import { Character, classIcons, Spell, SpellListType } from '../../db/Types';
@@ -77,6 +77,9 @@ function getDisplayedSpells(
 }
 
 export function CharacterSpellLists() {
+  const rowRefs = useRef(new Map());
+  const [pendingScrollKey, setPendingScrollKey] = useState<string | null>(null);
+
   const [activeTab, setActiveTab] = useState<SpellListType>('Class');
   const [character, setCharacter] = useState<Character>();
   const [spells, setSpells] = useState<Spell[]>([]);
@@ -90,6 +93,46 @@ export function CharacterSpellLists() {
   >([]);
 
   const params = useParams();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    // Attempt to scroll to the pending key when the component updates
+    if (pendingScrollKey) {
+      setTimeout(() => scrollToRow(pendingScrollKey), 100);
+    }
+  }, [pendingScrollKey]); // Re-run effect if the pendingScrollKey changes
+
+  const scrollToRow = (key: string) => {
+    const rowRef = rowRefs.current.get(key);
+    if (rowRef) {
+      // Scroll to the row
+      rowRef.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+      setPendingScrollKey(null);
+    }
+  };
+
+  useEffect(() => {
+    const activeTabQueried = searchParams.get('activeTab');
+    if (activeTabQueried) {
+      if (activeTabQueried === 'Prepared' && !hasPreparedList) {
+        return;
+      }
+      if (activeTabQueried === 'Known' && !hasKnownList) {
+        return;
+      }
+      setActiveTab(activeTabQueried as SpellListType);
+    }
+  }, [hasKnownList, hasPreparedList, searchParams]);
+
+  useEffect(() => {
+    const spellQueried = searchParams.get('spellIndex');
+    if (spellQueried) {
+      setPendingScrollKey(spellQueried);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchSpells();
@@ -130,6 +173,7 @@ export function CharacterSpellLists() {
     );
     setDisplayedSpells(getDisplayedSpells(spells, character, newValue));
     setActiveTab(newValue);
+    // navigate('');
   };
 
   const downloadSpellList = () => {
@@ -245,7 +289,7 @@ export function CharacterSpellLists() {
   const handleSpellClick = (item: Spell) => {
     const charId = character?.uuid;
     if (charId) {
-      navigate(`/spell/${item.index}?charId=${charId}`);
+      navigate(`/spell/${item.index}?charId=${charId}&activeTab=${activeTab}`);
     } else {
       navigate(`/spell/${item.index}`);
     }
@@ -323,6 +367,7 @@ export function CharacterSpellLists() {
                 key={item.index}
                 className="body-row"
                 onClick={() => handleSpellClick(item)}
+                ref={(el) => rowRefs.current.set(item.index, el)}
               >
                 <TableCell>{item.level}</TableCell>
                 <TableCell>
