@@ -49,3 +49,11 @@ nav a {
 nav a:hover {
   text-decoration: underline;
 }
+
+
+.page-container{
+  height: 100vh;
+  width: 100vw;
+  flex-direction: column;
+  display: flex;
+}

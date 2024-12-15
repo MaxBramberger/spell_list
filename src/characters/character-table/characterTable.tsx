@@ -24,6 +24,7 @@ import {
 import { Character, classIcons } from '../../db/Types';
 import Icon from '@mdi/react';
 import './characterTable.css';
+import '../../App.css';
 
 export const CharacterTable: React.FC = () => {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -47,7 +48,7 @@ export const CharacterTable: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="page-container">
       {/* Header with Icon Button */}
       <AppBar position="static">
         <Toolbar>
@@ -64,7 +65,11 @@ export const CharacterTable: React.FC = () => {
       </AppBar>
 
       {/* Table Displaying Characters */}
-      <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+      <TableContainer
+        component={Paper}
+        style={{ marginTop: '20px' }}
+        className="table"
+      >
         <Table>
           <TableHead>
             <TableRow>

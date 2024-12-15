@@ -7,6 +7,9 @@ import Icon from '@mdi/react';
 import { mdiChevronLeft } from '@mdi/js';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import './spellView.css';
+import '../../App.css';
+
 export const SpellView = () => {
   const [spell, setSpell] = useState<Spell>();
   const params = useParams();
@@ -49,30 +52,58 @@ export const SpellView = () => {
           </Typography>
         </Toolbar>
       </AppBar>
-      {spell && (
-        <Paper>
-          <div>
-            <p>
-              <strong>Classes: </strong> {spell.classes.join(', ')}
-            </p>
-            <p>
-              <strong>Components: </strong> {spell.components.join(', ')}
-            </p>
-            {spell.material && (
-              <p>
-                {' '}
-                <strong>Material: </strong>
-                {spell.material}
+      <div className="page-content">
+        {spell && (
+          <Paper className="view">
+            <div>
+              <p className="level-and-school">
+                {spell.level > 0
+                  ? `${spell.level} level ${spell.school}`
+                  : `${spell.school} cantrip`}{' '}
+                {spell.ritual && '(ritual)'}
               </p>
-            )}
-            {spell.desc.map((descriptionBlock, index) => (
-              <ReactMarkdown remarkPlugins={[remarkGfm]} key={index}>
-                {descriptionBlock}
+              <p>
+                <strong>Casting Time:</strong> {spell.casting_time}
+              </p>
+              <p>
+                <strong>Range: </strong> {spell.range}
+              </p>
+              <p>
+                <strong>Components: </strong> {spell.components.join(', ')}
+              </p>
+              {spell.material && (
+                <p>
+                  {' '}
+                  <strong>Material: </strong>
+                  {spell.material}
+                </p>
+              )}
+              <p>
+                <strong>Duration: </strong>{' '}
+                {spell.concentration && 'Concentration,'} {spell.duration}
+              </p>
+              <p>
+                <strong>Classes: </strong> {spell.classes.join(', ')}
+              </p>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {spell.desc
+                  .map((descBlock) =>
+                    descBlock[0] === '|' &&
+                    descBlock[descBlock.length - 1] === '|'
+                      ? `${descBlock}`
+                      : `\n${descBlock}`
+                  )
+                  .join('\n')}
               </ReactMarkdown>
-            ))}
-          </div>
-        </Paper>
-      )}
+              {spell.higher_level && (
+                <p>
+                  <strong> At Higher Levels:</strong> {spell.higher_level}
+                </p>
+              )}
+            </div>
+          </Paper>
+        )}
+      </div>
     </div>
   );
 };

@@ -23,6 +23,7 @@ import Icon from '@mdi/react';
 import { mdiChevronLeft, mdiDownload, mdiUpload } from '@mdi/js';
 import { Character, classIcons, Spell, SpellListType } from '../../db/Types';
 import './characterSpellLists.css';
+import '../../App.css';
 import {
   fetchSpells,
   getSpellList$,
@@ -312,8 +313,8 @@ export function CharacterSpellLists() {
             <TableRow>
               <TableCell>Level</TableCell>
               <TableCell>Name</TableCell>
-              {showPreparedCheckBox && <TableCell> Prepared </TableCell>}
-              {showKnownCheckBox && <TableCell> Known </TableCell>}
+              <TableCell> {showPreparedCheckBox && 'Prepared'}</TableCell>
+              <TableCell> {showKnownCheckBox && 'Known'} </TableCell>
             </TableRow>
           </TableHead>
           <TableBody className="body">
@@ -324,27 +325,33 @@ export function CharacterSpellLists() {
                 onClick={() => handleSpellClick(item)}
               >
                 <TableCell>{item.level}</TableCell>
-                <TableCell>{item.name}</TableCell>
-                {showPreparedCheckBox && (
-                  <TableCell>
+                <TableCell>
+                  {item.name}
+                  {item.ritual && <sup className="tag">R</sup>}
+                  {item.concentration && <sup className="tag">C</sup>}
+                </TableCell>
+
+                <TableCell>
+                  {showPreparedCheckBox && (
                     <Checkbox
                       size="small"
                       checked={item.prepared}
                       onChange={(e) => handlePreparedCheckBoxChange(item, e)}
                       onClick={(e) => e.stopPropagation()}
                     />
-                  </TableCell>
-                )}
-                {showKnownCheckBox && (
-                  <TableCell>
+                  )}
+                </TableCell>
+
+                <TableCell>
+                  {showKnownCheckBox && (
                     <Checkbox
                       size="small"
                       checked={item.known}
                       onChange={(e) => handleKnownCheckBoxChange(item, e)}
                       onClick={(e) => e.stopPropagation()}
                     />
-                  </TableCell>
-                )}
+                  )}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

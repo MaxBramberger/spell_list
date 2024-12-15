@@ -10,12 +10,7 @@
 .table{
     margin-top: 16px;
     overflow: auto;
-}
-
-.page-container{
-    max-height: 100vh;
-    flex-direction: column;
-    display: flex;
+    flex: 1 1
 }
 
 table thead th {
@@ -28,4 +23,8 @@ table thead th {
 
 tr.body-row:hover{
     background-color: #e1e1e1;
+}
+
+.tag{
+    font-style: italic;
 }

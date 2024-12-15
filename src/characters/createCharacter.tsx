@@ -18,6 +18,7 @@ import { CharacterClassName, charClassDict } from '../db/Types';
 import Icon from '@mdi/react';
 import { mdiChevronLeft } from '@mdi/js';
 import { v4 as uuidv4 } from 'uuid';
+import '../App.css';
 
 export const CreateCharacter: React.FC = () => {
   const navigate = useNavigate();
@@ -50,7 +51,7 @@ export const CreateCharacter: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="page-container">
       {/* Header */}
       <AppBar position="static">
         <Toolbar>
