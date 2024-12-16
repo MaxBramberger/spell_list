@@ -59,7 +59,7 @@ export const CreateCharacter: React.FC = () => {
             <Icon path={mdiChevronLeft} size={1}></Icon>
           </IconButton>
           <Typography variant="h6" style={{ flexGrow: 1 }}>
-            Create a Character
+            Create a Character, yolo
           </Typography>
         </Toolbar>
       </AppBar>
