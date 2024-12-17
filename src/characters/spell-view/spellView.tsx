@@ -104,7 +104,7 @@ export const SpellView = () => {
                   )
                   .join('\n')}
               </ReactMarkdown>
-              {spell.higher_level && (
+              {spell.higher_level && spell.higher_level.length > 0 && (
                 <p>
                   <strong> At Higher Levels:</strong> {spell.higher_level}
                 </p>
