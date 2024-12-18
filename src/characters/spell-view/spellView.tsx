@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import { Spell } from '../../db/Types';
 import { getSpellList$ } from '../../service/SpellListService';
 import { AppBar, IconButton, Paper, Toolbar, Typography } from '@mui/material';
@@ -12,6 +17,7 @@ import '../../App.css';
 
 export const SpellView = () => {
   const [spell, setSpell] = useState<Spell>();
+  const location = useLocation();
   const params = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -43,7 +49,7 @@ export const SpellView = () => {
       if (activeTab) queryString += `?activeTab=${activeTab}`;
       if (spell)
         queryString += `${queryString ? '&' : '?'}spellIndex=${spell.index}`;
-      navigate(`${baseUrl}${queryString}`);
+      navigate(`${baseUrl}${queryString}`, { ...location });
     } else {
       navigate(`/`);
     }
@@ -82,7 +88,6 @@ export const SpellView = () => {
               </p>
               {spell.material && (
                 <p>
-                  {' '}
                   <strong>Material: </strong>
                   {spell.material}
                 </p>
