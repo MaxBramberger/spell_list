@@ -7,6 +7,7 @@ export class CharacterSpellListMapper {
   }
 
   readonly spellPreparingClasses: CharacterClassName[] = [
+    'Artificer',
     'Druid',
     'Cleric',
     'Paladin',

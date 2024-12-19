@@ -7,11 +7,13 @@ import {
   mdiPineTree,
   mdiShieldHalfFull,
   mdiStarOutline,
+  mdiWrench,
 } from '@mdi/js';
 
 export type SpellComponent = 'V' | 'S' | 'M';
 
 export type CharacterClassName =
+  | 'Artificer'  
   | 'Bard'
   | 'Cleric'
   | 'Druid'
@@ -27,6 +29,7 @@ export interface CharacterClass {
 }
 
 export const charClassDict: { [K in CharacterClassName]: K } = {
+  Artificer: 'Artificer',
   Bard: 'Bard',
   Cleric: 'Cleric',
   Druid: 'Druid',
@@ -38,6 +41,7 @@ export const charClassDict: { [K in CharacterClassName]: K } = {
 };
 
 export const classIcons: { [K in CharacterClassName]: string } = {
+  Artificer: mdiWrench,
   Bard: mdiMusic,
   Cleric: mdiStarOutline,
   Druid: mdiPaw,
