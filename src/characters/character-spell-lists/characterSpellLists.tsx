@@ -79,6 +79,8 @@ function getDisplayedSpells(
 export function CharacterSpellLists() {
   const rowRefs = useRef(new Map());
   const [pendingScrollKey, setPendingScrollKey] = useState<string | null>(null);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const tableRef = useRef<any>(null);
   const location = useLocation();
 
