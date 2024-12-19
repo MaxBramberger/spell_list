@@ -2,13 +2,69 @@ import { IconButton, Tooltip } from '@mui/material';
 import Icon from '@mdi/react';
 import { mdiDownload, mdiUpload } from '@mdi/js';
 import React from 'react';
-import { Character } from '../db/Types';
+import { Character, CharacterClass, charClassDict } from '../db/Types';
 import {
   fetchCharacters,
   getCharacter$,
   upsertCharacter,
 } from '../service/CharacterService';
 import { firstValueFrom } from 'rxjs';
+
+const characterKeyDict: { [K in keyof Character]: K } = {
+  uuid: 'uuid',
+  name: 'name',
+  classes: 'classes',
+  knownSpellIndices: 'knownSpellIndices',
+  preparedSpellIndices: 'preparedSpellIndices',
+};
+
+const characterClassKeyDict: { [K in keyof CharacterClass]: K } = {
+  name: 'name',
+  level: 'level',
+};
+
+export function isCharClass(obj: unknown): obj is CharacterClass {
+  const keys = Object.keys(characterClassKeyDict);
+  if (typeof obj === 'object' && obj !== null) {
+    const objectKeys = Object.keys(obj);
+    if (objectKeys.every((key) => keys.includes(key))) {
+      if (keys.every((key) => objectKeys.includes(key))) {
+        const classObj: CharacterClass = obj as CharacterClass;
+        return (
+          typeof classObj.level === 'number' &&
+          Object.keys(charClassDict).includes(classObj.name)
+        );
+      }
+    }
+  }
+  return false;
+}
+
+export function isCharacter(obj: unknown): obj is Character {
+  const keys = Object.keys(characterKeyDict);
+
+  if (typeof obj === 'object' && obj !== null) {
+    const objectKeys = Object.keys(obj);
+    if (objectKeys.every((key) => keys.includes(key))) {
+      if (keys.every((key) => objectKeys.includes(key))) {
+        const charObj: Character = obj as Character;
+        return (
+          Array.isArray(charObj.classes) &&
+          charObj.classes.every((charClass) => isCharClass(charClass)) &&
+          Array.isArray(charObj.knownSpellIndices) &&
+          charObj.knownSpellIndices.every(
+            (index) => typeof index === 'string'
+          ) &&
+          Array.isArray(charObj.preparedSpellIndices) &&
+          charObj.preparedSpellIndices.every(
+            (index) => typeof index === 'string'
+          )
+        );
+      }
+    }
+  }
+  return false;
+}
 
 export const CharacterImport = () => {
   const importCharacter = (): void => {
@@ -27,9 +83,14 @@ export const CharacterImport = () => {
       reader.onload = async (e) => {
         try {
           const text = e.target?.result as string; // Ensure the result is a string
-          const data: Character = JSON.parse(text); // Parse JSON data
-          await upsertCharacter(data);
-          await fetchCharacters();
+          const data: unknown = JSON.parse(text); // Parse JSON data
+          if (isCharacter(data)) {
+            await upsertCharacter(data);
+            await fetchCharacters();
+          } else {
+            console.error('Invalid character format!');
+            alert('Invalid JSON file.');
+          }
         } catch (error) {
           console.error('Error parsing JSON file:', error);
           alert('Invalid JSON file.');
