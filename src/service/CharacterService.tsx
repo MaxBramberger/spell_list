@@ -16,7 +16,7 @@ export const addCharacter = async (character: Omit<Character, 'id'>) => {
   fetchCharacters().then();
 };
 
-export const updateCharacter = async (character: Character) => {
+export const upsertCharacter = async (character: Character) => {
   db.characters.put(character);
   await fetchCharacters();
 };

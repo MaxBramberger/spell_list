@@ -1,5 +1,5 @@
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
-import { getCharacter$, updateCharacter } from '../../service/CharacterService';
+import { getCharacter$, upsertCharacter } from '../../service/CharacterService';
 import { useNavigate } from 'react-router-dom';
 import {
   AppBar,
@@ -250,7 +250,7 @@ export function CharacterSpellLists() {
           spell.index
         );
         character.knownSpellIndices = Array.from(spellIndexSet.values());
-        await updateCharacter(character);
+        await upsertCharacter(character);
       } else {
         const spellIndexSet = new Set(character.knownSpellIndices);
         spellIndexSet.delete(spell.index);
@@ -259,7 +259,7 @@ export function CharacterSpellLists() {
         const preparedIndexSet = new Set(character.preparedSpellIndices);
         preparedIndexSet.delete(spell.index);
         character.preparedSpellIndices = Array.from(preparedIndexSet);
-        await updateCharacter(character);
+        await upsertCharacter(character);
       }
       setDisplayedSpells(getDisplayedSpells(spells, character, activeTab));
     }
@@ -277,12 +277,12 @@ export function CharacterSpellLists() {
           spell.index
         );
         character.preparedSpellIndices = Array.from(spellIndexSet.values());
-        await updateCharacter(character);
+        await upsertCharacter(character);
       } else {
         const spellIndexSet = new Set(character.preparedSpellIndices);
         spellIndexSet.delete(spell.index);
         character.preparedSpellIndices = Array.from(spellIndexSet.values());
-        await updateCharacter(character);
+        await upsertCharacter(character);
       }
       setDisplayedSpells(getDisplayedSpells(spells, character, activeTab));
     }

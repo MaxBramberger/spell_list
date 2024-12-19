@@ -26,6 +26,7 @@ import Icon from '@mdi/react';
 import './characterTable.css';
 import '../../App.css';
 import ConfirmationDialog from '../../dialog/confirmationDialog';
+import { CharacterExporter, CharacterImport } from '../../importer/CharacterIO';
 
 export const CharacterTable: React.FC = () => {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -79,6 +80,7 @@ export const CharacterTable: React.FC = () => {
           >
             <AddIcon />
           </IconButton>
+          <CharacterImport />
         </Toolbar>
       </AppBar>
 
@@ -94,6 +96,7 @@ export const CharacterTable: React.FC = () => {
               <TableCell></TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Class</TableCell>
+              <TableCell>Export</TableCell>
               <TableCell>Delete</TableCell>
             </TableRow>
           </TableHead>
@@ -118,6 +121,9 @@ export const CharacterTable: React.FC = () => {
                   {character.classes
                     .map((characterClass) => characterClass.name)
                     .join(', ')}
+                </TableCell>
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  <CharacterExporter uuid={character.uuid} />
                 </TableCell>
                 <TableCell>
                   {
