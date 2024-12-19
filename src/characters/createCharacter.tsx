@@ -27,8 +27,9 @@ export const CreateCharacter: React.FC = () => {
   const [characterName, setCharacterName] = useState<string>('');
 
   // State to store the selected character class
-  const [characterClass, setCharacterClass] =
-    useState<CharacterClassName | null>(null);
+  const [characterClass, setCharacterClass] = useState<CharacterClassName | ''>(
+    ''
+  );
 
   const classes = Object.values(charClassDict);
 
@@ -43,7 +44,7 @@ export const CreateCharacter: React.FC = () => {
         preparedSpellIndices: [],
       });
       setCharacterName('');
-      setCharacterClass(null);
+      setCharacterClass('' as CharacterClassName);
       navigate('/');
     } else {
       alert('Please enter a valid character name and select a class.');

@@ -25,9 +25,14 @@ import { Character, classIcons } from '../../db/Types';
 import Icon from '@mdi/react';
 import './characterTable.css';
 import '../../App.css';
+import ConfirmationDialog from '../../dialog/confirmationDialog';
 
 export const CharacterTable: React.FC = () => {
   const [characters, setCharacters] = useState<Character[]>([]);
+  const [dialogCharacter, setDialogCharacter] = useState<Character | undefined>(
+    undefined
+  );
+  const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
 
   fetchCharacters();
@@ -43,8 +48,21 @@ export const CharacterTable: React.FC = () => {
   };
 
   const handleDeleteClick = async (row: Character, event: MouseEvent) => {
+    setDialogCharacter(row);
     event.stopPropagation();
-    await deleteCharacter(row.uuid);
+    setDialogOpen(true);
+  };
+  const handleCloseDialog = () => {
+    setDialogCharacter(undefined);
+    setDialogOpen(false);
+  };
+
+  const handleConfirmAction = async () => {
+    setDialogOpen(false);
+    if (dialogCharacter) {
+      await deleteCharacter(dialogCharacter.uuid);
+    }
+    fetchCharacters();
   };
 
   return (
@@ -103,13 +121,18 @@ export const CharacterTable: React.FC = () => {
                 </TableCell>
                 <TableCell>
                   {
-                    <IconButton
-                      onClick={(e) =>
-                        handleDeleteClick(character, e as unknown as MouseEvent)
-                      }
-                    >
-                      <DeleteIcon />
-                    </IconButton>
+                    <div>
+                      <IconButton
+                        onClick={(e) =>
+                          handleDeleteClick(
+                            character,
+                            e as unknown as MouseEvent
+                          )
+                        }
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </div>
                   }
                 </TableCell>
               </TableRow>
@@ -117,6 +140,17 @@ export const CharacterTable: React.FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <ConfirmationDialog
+        open={dialogOpen}
+        onClose={handleCloseDialog}
+        onConfirm={() => handleConfirmAction()}
+        title="Delete"
+        message={
+          dialogCharacter
+            ? `Are you sure you want to delete the character "${dialogCharacter.name}"?`
+            : ''
+        }
+      />
     </div>
   );
 };

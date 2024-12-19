@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { getCharacter$, updateCharacter } from '../../service/CharacterService';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -79,6 +79,8 @@ function getDisplayedSpells(
 export function CharacterSpellLists() {
   const rowRefs = useRef(new Map());
   const [pendingScrollKey, setPendingScrollKey] = useState<string | null>(null);
+  const tableRef = useRef<any>(null);
+  const location = useLocation();
 
   const [activeTab, setActiveTab] = useState<SpellListType>('Class');
   const [character, setCharacter] = useState<Character>();
@@ -97,11 +99,13 @@ export function CharacterSpellLists() {
 
   useEffect(() => {
     // Attempt to scroll to the pending key when the component updates
-    if (pendingScrollKey) {
-      setTimeout(() => scrollToRow(pendingScrollKey), 100);
+    if (tableRef.current && location.state?.spellListScrollTop) {
+      tableRef.current.scrollTop = location.state.spellListScrollTop;
+      setPendingScrollKey(null);
     }
-  }, [pendingScrollKey]); // Re-run effect if the pendingScrollKey changes
+  }, [location, tableRef, displayedSpells]); // Re-run effect if the pendingScrollKey changes
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const scrollToRow = (key: string) => {
     const rowRef = rowRefs.current.get(key);
     if (rowRef) {
@@ -110,7 +114,6 @@ export function CharacterSpellLists() {
         behavior: 'auto',
         block: 'center',
       });
-      setPendingScrollKey(null);
     }
   };
 
@@ -173,7 +176,6 @@ export function CharacterSpellLists() {
     );
     setDisplayedSpells(getDisplayedSpells(spells, character, newValue));
     setActiveTab(newValue);
-    // navigate('');
   };
 
   const downloadSpellList = () => {
@@ -289,10 +291,16 @@ export function CharacterSpellLists() {
   const handleSpellClick = (item: Spell) => {
     const charId = character?.uuid;
     if (charId) {
-      navigate(`/spell/${item.index}?charId=${charId}&activeTab=${activeTab}`);
+      navigate(`/spell/${item.index}?charId=${charId}&activeTab=${activeTab}`, {
+        state: { spellListScrollTop: tableRef.current.scrollTop },
+      });
     } else {
       navigate(`/spell/${item.index}`);
     }
+  };
+
+  const showTable: React.CSSProperties = {
+    visibility: pendingScrollKey ? 'hidden' : 'visible',
   };
 
   const navigate = useNavigate();
@@ -351,7 +359,12 @@ export function CharacterSpellLists() {
         </Tabs>
       </Paper>
 
-      <TableContainer component={Paper} className="table">
+      <TableContainer
+        component={Paper}
+        className="table"
+        ref={tableRef}
+        style={showTable}
+      >
         <Table>
           <TableHead>
             <TableRow>
