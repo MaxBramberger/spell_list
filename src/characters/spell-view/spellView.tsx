@@ -47,8 +47,6 @@ export const SpellView = () => {
       // Add query parameters conditionally
       let queryString = '';
       if (activeTab) queryString += `?activeTab=${activeTab}`;
-      if (spell)
-        queryString += `${queryString ? '&' : '?'}spellIndex=${spell.index}`;
       navigate(`${baseUrl}${queryString}`, { ...location });
     } else {
       navigate(`/`);

@@ -78,7 +78,7 @@ function getDisplayedSpells(
 
 export function CharacterSpellLists() {
   const rowRefs = useRef(new Map());
-  const [pendingScrollKey, setPendingScrollKey] = useState<string | null>(null);
+  const [tableInitialized, setTableInitialized] = useState<boolean>(false);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const tableRef = useRef<any>(null);
@@ -100,12 +100,20 @@ export function CharacterSpellLists() {
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    // Attempt to scroll to the pending key when the component updates
-    if (tableRef.current && location.state?.spellListScrollTop) {
+    if (
+      location.state?.spellListScrollTop !== undefined &&
+      tableRef.current !== location.state.spellListScrollTop
+    ) {
       tableRef.current.scrollTop = location.state.spellListScrollTop;
-      setPendingScrollKey(null);
     }
-  }, [location, tableRef, displayedSpells]); // Re-run effect if the pendingScrollKey changes
+    setTableInitialized(true);
+  }, [location, tableRef, displayedSpells, tableInitialized]);
+
+  const checkTableInit = () => {
+    if (tableRef.current?.scrollTop === location.state?.spellListScrollTop) {
+      location.state = {};
+    }
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const scrollToRow = (key: string) => {
@@ -131,13 +139,6 @@ export function CharacterSpellLists() {
       setActiveTab(activeTabQueried as SpellListType);
     }
   }, [hasKnownList, hasPreparedList, searchParams]);
-
-  useEffect(() => {
-    const spellQueried = searchParams.get('spellIndex');
-    if (spellQueried) {
-      setPendingScrollKey(spellQueried);
-    }
-  }, [searchParams]);
 
   useEffect(() => {
     fetchSpells();
@@ -302,7 +303,7 @@ export function CharacterSpellLists() {
   };
 
   const showTable: React.CSSProperties = {
-    visibility: pendingScrollKey ? 'hidden' : 'visible',
+    visibility: !tableInitialized ? 'hidden' : 'visible',
   };
 
   const navigate = useNavigate();
@@ -366,6 +367,7 @@ export function CharacterSpellLists() {
         className="table"
         ref={tableRef}
         style={showTable}
+        onScroll={checkTableInit}
       >
         <Table>
           <TableHead>
