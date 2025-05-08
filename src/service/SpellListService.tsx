@@ -19,3 +19,8 @@ export const fetchSpells = async () => {
 export const getSpellList$ = () => {
   return spellList$.asObservable();
 };
+
+export const clearSpellList = async () => {
+  await db.spells.clear();
+  await fetchSpells();
+};
