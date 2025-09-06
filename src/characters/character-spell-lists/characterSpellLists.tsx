@@ -17,7 +17,7 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import Icon from '@mdi/react';
 import { mdiChevronLeft } from '@mdi/js';
 import { Character, classIcons, Spell, SpellListType } from '../../db/Types';
@@ -27,6 +27,7 @@ import { fetchSpells, getSpellList$ } from '../../service/SpellListService';
 import { combineLatest } from 'rxjs';
 import { CharacterSpellListMapper } from '../characterSpellListMapper';
 import SpellListSettings from './spellListSettings';
+import { SpellSlotControl } from './spellSlotControl';
 
 const tableFilters: {
   [K in SpellListType]: (x: Spell, char: Character) => boolean;
@@ -290,52 +291,81 @@ export function CharacterSpellLists() {
         onScroll={checkTableInit}
       >
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Level</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell> {showPreparedCheckBox && 'Prepared'}</TableCell>
-              <TableCell> {showKnownCheckBox && 'Known'} </TableCell>
-            </TableRow>
-          </TableHead>
           <TableBody className="body">
-            {displayedSpells.map((item) => (
-              <TableRow
-                key={item.index}
-                className="body-row"
-                onClick={() => handleSpellClick(item)}
-                ref={(el) => rowRefs.current.set(item.index, el)}
-              >
-                <TableCell>{item.level}</TableCell>
-                <TableCell>
-                  {item.name}
-                  {item.ritual && <sup className="tag">R</sup>}
-                  {item.concentration && <sup className="tag">C</sup>}
-                </TableCell>
+            {displayedSpells.reduce(
+              (previous: ReactElement[], item, currentIndex, someArray) => {
+                const previousSpell = displayedSpells[currentIndex - 1];
+                if (previousSpell && previousSpell.level !== item.level) {
+                  previous.push(
+                    // <TableRow className="level-header">
+                    //   <TableCell colSpan={2} className="spell-slot-control">
+                    //     Level {item.level}: HERE BE SPELL SLOTS
+                    //   </TableCell>
+                    //   <TableCell>
+                    //     {showPreparedCheckBox && 'Prepared'}
+                    //   </TableCell>
+                    //   <TableCell> {showKnownCheckBox && 'Known'} </TableCell>
+                    // </TableRow>
+                    <SpellSlotControl
+                      character={character!}
+                      slotLevel={item.level}
+                    ></SpellSlotControl>
+                  );
+                } else if (!previousSpell) {
+                  previous.push(
+                    <TableRow className="level-header">
+                      <TableCell colSpan={2}>Cantrips</TableCell>
+                      <TableCell>
+                        {' '}
+                        {showPreparedCheckBox && 'Prepared'}
+                      </TableCell>
+                      <TableCell> {showKnownCheckBox && 'Known'} </TableCell>
+                    </TableRow>
+                  );
+                }
+                previous.push(
+                  <TableRow
+                    key={item.index}
+                    className="body-row"
+                    onClick={() => handleSpellClick(item)}
+                    ref={(el) => rowRefs.current.set(item.index, el)}
+                  >
+                    <TableCell></TableCell>
+                    <TableCell>
+                      {item.name}
+                      {item.ritual && <sup className="tag">R</sup>}
+                      {item.concentration && <sup className="tag">C</sup>}
+                    </TableCell>
 
-                <TableCell>
-                  {showPreparedCheckBox && (
-                    <Checkbox
-                      size="small"
-                      checked={item.prepared}
-                      onChange={(e) => handlePreparedCheckBoxChange(item, e)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  )}
-                </TableCell>
+                    <TableCell>
+                      {showPreparedCheckBox && (
+                        <Checkbox
+                          size="small"
+                          checked={item.prepared}
+                          onChange={(e) =>
+                            handlePreparedCheckBoxChange(item, e)
+                          }
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      )}
+                    </TableCell>
 
-                <TableCell>
-                  {showKnownCheckBox && (
-                    <Checkbox
-                      size="small"
-                      checked={item.known}
-                      onChange={(e) => handleKnownCheckBoxChange(item, e)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
+                    <TableCell>
+                      {showKnownCheckBox && (
+                        <Checkbox
+                          size="small"
+                          checked={item.known}
+                          onChange={(e) => handleKnownCheckBoxChange(item, e)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+                return previous;
+              },
+              []
+            )}
           </TableBody>
         </Table>
       </TableContainer>

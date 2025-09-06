@@ -1,5 +1,5 @@
 import Dexie, { Table } from 'dexie';
-import { Character, Spell } from './Types';
+import { Character, initialSpellSlots, Spell } from './Types';
 
 class SpellDatabase extends Dexie {
   spells!: Table<Spell, string>; // Table name and primary key type
@@ -19,7 +19,7 @@ class SpellDatabase extends Dexie {
         .toCollection()
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .modify((character: any) => {
-          character.spellSlots = [];
+          character.spellSlots = initialSpellSlots;
         });
     });
   }

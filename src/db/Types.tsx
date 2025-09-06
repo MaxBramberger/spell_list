@@ -102,3 +102,15 @@ export interface Character {
   preparedSpellIndices: string[];
   spellSlots: SpellSlotLevel[];
 }
+
+export const initialSpellSlots: SpellSlotLevel[] = [
+  { level: 1, used: 0, available: 0 },
+  { level: 2, used: 0, available: 0 },
+  { level: 3, used: 0, available: 0 },
+  { level: 4, used: 0, available: 0 },
+  { level: 5, used: 0, available: 0 },
+  { level: 6, used: 0, available: 0 },
+  { level: 7, used: 0, available: 0 },
+  { level: 8, used: 0, available: 0 },
+  { level: 9, used: 0, available: 0 },
+];

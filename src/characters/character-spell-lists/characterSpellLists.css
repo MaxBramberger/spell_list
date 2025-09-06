@@ -16,13 +16,23 @@
 table thead th {
     position: sticky;
     top: 0; /* Stick to the top of the container */
-    z-index: 2; /* Ensure it appears above other content */
+    z-index: 1; /* Ensure it appears above other content */
     background-color: white; /* Background color to prevent transparency */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); /* Optional shadow for better visual separation */
 }
 
 tr.body-row:hover{
     background-color: #e1e1e1;
+}
+
+tr.level-header{
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background-color: white;
+    .spell-slot-control {
+        width: 100%;
+    }
 }
 
 .tag{
