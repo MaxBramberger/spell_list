@@ -16,6 +16,7 @@ const characterKeyDict: { [K in keyof Character]: K } = {
   classes: 'classes',
   knownSpellIndices: 'knownSpellIndices',
   preparedSpellIndices: 'preparedSpellIndices',
+  spellSlots: 'spellSlots',
 };
 
 const characterClassKeyDict: { [K in keyof CharacterClass]: K } = {

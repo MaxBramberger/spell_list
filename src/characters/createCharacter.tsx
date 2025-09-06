@@ -42,6 +42,7 @@ export const CreateCharacter: React.FC = () => {
         name: characterName,
         knownSpellIndices: [],
         preparedSpellIndices: [],
+        spellSlots: [],
       });
       setCharacterName('');
       setCharacterClass('' as CharacterClassName);

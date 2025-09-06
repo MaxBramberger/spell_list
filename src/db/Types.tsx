@@ -13,7 +13,7 @@ import {
 export type SpellComponent = 'V' | 'S' | 'M';
 
 export type CharacterClassName =
-  | 'Artificer'  
+  | 'Artificer'
   | 'Bard'
   | 'Cleric'
   | 'Druid'
@@ -88,10 +88,17 @@ export const spellKeyDict: { [K in keyof Spell]: K } = {
 
 export type SpellListType = 'Known' | 'Prepared' | 'Class' | 'All';
 
+export interface SpellSlotLevel {
+  level: number;
+  available: number;
+  used: number;
+}
+
 export interface Character {
   uuid: string;
   name: string;
   classes: CharacterClass[];
   knownSpellIndices: string[];
   preparedSpellIndices: string[];
+  spellSlots: SpellSlotLevel[];
 }
