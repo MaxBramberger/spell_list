@@ -2,7 +2,7 @@ import { Character, SpellSlotLevel } from '../../db/Types';
 import { Checkbox, IconButton, TableCell, TableRow } from '@mui/material';
 import React from 'react';
 import Icon from '@mdi/react';
-import { mdiMinus, mdiPlus } from '@mdi/js';
+import { mdiMinus, mdiOilLevel, mdiPlus } from '@mdi/js';
 import './spellSlotControl.css';
 import { upsertCharacter } from '../../service/CharacterService';
 
@@ -18,7 +18,7 @@ const markSpellSlotUsed = async (character: Character) => {
   };
   // TODO: Bäda implements logic
 
-  await upsertCharacter(newCharacter);
+  //await upsertCharacter(newCharacter);
 };
 
 const resetSpellSlot = async (character: Character) => {
@@ -28,32 +28,64 @@ const resetSpellSlot = async (character: Character) => {
   };
   // TODO: Bäda implements logic
 
-  await upsertCharacter(newCharacter);
+  //await upsertCharacter(newCharacter);
 };
 
 export const SpellSlotControl = (input: SpellSlotControlInput) => {
   const addSpellSlot = async (event: MouseEvent) => {
     event.stopPropagation();
 
-    const newCharacter: Character = {
+    
+    const currentSpellSlots = getCurrentSpellSlots();
+    if (currentSpellSlots)
+      {
+        const newSpellSlots: SpellSlotLevel = {
+          level: currentSpellSlots.level,
+          available: currentSpellSlots.available+1,
+          used: currentSpellSlots.used
+      }
+        const newCharacter: Character = {
       ...input.character,
-      spellSlots: [],
-    };
-    // TODO: Bäda implements logic
+      spellSlots: input.character.spellSlots.map((value)=>{
+        if(value.level === newSpellSlots.level){
+          return newSpellSlots;
+        }
+        else{
+          return value
+        }
+      }),
+      };
+        await upsertCharacter(newCharacter);
+      } 
 
-    await upsertCharacter(newCharacter);
+
+    
   };
 
   const removeSpellSlot = async (event: MouseEvent) => {
     event.stopPropagation();
 
-    const newCharacter: Character = {
+    const currentSpellSlots = getCurrentSpellSlots();
+    if (currentSpellSlots&&currentSpellSlots.available>0)
+      {
+        const newSpellSlots: SpellSlotLevel = {
+          level: currentSpellSlots.level,
+          available: currentSpellSlots.available - 1,
+          used: currentSpellSlots.used === currentSpellSlots.available? currentSpellSlots.used-1: currentSpellSlots.used,
+      }
+        const newCharacter: Character = {
       ...input.character,
-      spellSlots: [],
-    };
-    // TODO: Bäda implements logic
-
-    await upsertCharacter(newCharacter);
+      spellSlots: input.character.spellSlots.map((value)=>{
+        if(value.level === newSpellSlots.level){
+          return newSpellSlots;
+        }
+        else{
+          return value
+        }
+      }),
+      };
+        await upsertCharacter(newCharacter);
+      }
   };
 
   const handleSpellSlotClick = async (

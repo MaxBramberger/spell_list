@@ -14,7 +14,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { addCharacter } from '../service/CharacterService';
-import { CharacterClassName, charClassDict } from '../db/Types';
+import { CharacterClassName, charClassDict, initialSpellSlots } from '../db/Types';
 import Icon from '@mdi/react';
 import { mdiChevronLeft } from '@mdi/js';
 import { v4 as uuidv4 } from 'uuid';
@@ -42,7 +42,7 @@ export const CreateCharacter: React.FC = () => {
         name: characterName,
         knownSpellIndices: [],
         preparedSpellIndices: [],
-        spellSlots: [],
+        spellSlots: initialSpellSlots,
       });
       setCharacterName('');
       setCharacterClass('' as CharacterClassName);
