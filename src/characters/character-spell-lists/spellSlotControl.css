@@ -2,3 +2,35 @@
     border: 1px;
     border-color: black;
 }
+
+.spell-slot-edit{
+    align-items: center;
+}
+
+.control-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.slot-title-container{
+    display: flex;
+    align-items: center;
+}
+
+.slot-container{
+    display: flex;
+    align-items: center;
+}
+
+tr.level-header{
+    td {
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        background-color: white;
+
+        .spell-slot-control {
+            width: 100%;
+        }
+    }
+}

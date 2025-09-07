@@ -11,7 +11,6 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   Tabs,
   Toolbar,
@@ -297,15 +296,6 @@ export function CharacterSpellLists() {
                 const previousSpell = displayedSpells[currentIndex - 1];
                 if (previousSpell && previousSpell.level !== item.level) {
                   previous.push(
-                    // <TableRow className="level-header">
-                    //   <TableCell colSpan={2} className="spell-slot-control">
-                    //     Level {item.level}: HERE BE SPELL SLOTS
-                    //   </TableCell>
-                    //   <TableCell>
-                    //     {showPreparedCheckBox && 'Prepared'}
-                    //   </TableCell>
-                    //   <TableCell> {showKnownCheckBox && 'Known'} </TableCell>
-                    // </TableRow>
                     <SpellSlotControl
                       character={character!}
                       slotLevel={item.level}
@@ -313,14 +303,10 @@ export function CharacterSpellLists() {
                   );
                 } else if (!previousSpell) {
                   previous.push(
-                    <TableRow className="level-header">
-                      <TableCell colSpan={2}>Cantrips</TableCell>
-                      <TableCell>
-                        {' '}
-                        {showPreparedCheckBox && 'Prepared'}
-                      </TableCell>
-                      <TableCell> {showKnownCheckBox && 'Known'} </TableCell>
-                    </TableRow>
+                    <SpellSlotControl
+                      character={character!}
+                      slotLevel={item.level}
+                    ></SpellSlotControl>
                   );
                 }
                 previous.push(
