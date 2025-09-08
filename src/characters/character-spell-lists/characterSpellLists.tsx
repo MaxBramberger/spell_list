@@ -257,7 +257,7 @@ export function CharacterSpellLists() {
               : ''}{' '}
             {character?.name}
           </Typography>
-          <SpellListSettings character = {character} />
+          <SpellListSettings character={character} />
         </Toolbar>
       </AppBar>
 

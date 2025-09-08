@@ -81,49 +81,52 @@ export const SpellSlotControl = (input: SpellSlotControlInput) => {
   };
 
   const markSpellSlotUsed = async (character: Character) => {
-      const currentSpellSlots = getCurrentSpellSlots(character);
-      if (currentSpellSlots && currentSpellSlots.used < currentSpellSlots.available) {
-        const newSpellSlots: SpellSlotLevel = {
-          level: currentSpellSlots.level,
-          available: currentSpellSlots.available,
-          used: currentSpellSlots.used + 1,
-        };
-        const newCharacter: Character = {
-          ...character,
-          spellSlots: character.spellSlots.map((value) => {
-            if (value.level === newSpellSlots.level) {
-              return newSpellSlots;
-            } else {
-              return value;
-            }
-          }),
-        };
-        await upsertCharacter(newCharacter);
-        setCharacter(newCharacter);
-       }
+    const currentSpellSlots = getCurrentSpellSlots(character);
+    if (
+      currentSpellSlots &&
+      currentSpellSlots.used < currentSpellSlots.available
+    ) {
+      const newSpellSlots: SpellSlotLevel = {
+        level: currentSpellSlots.level,
+        available: currentSpellSlots.available,
+        used: currentSpellSlots.used + 1,
+      };
+      const newCharacter: Character = {
+        ...character,
+        spellSlots: character.spellSlots.map((value) => {
+          if (value.level === newSpellSlots.level) {
+            return newSpellSlots;
+          } else {
+            return value;
+          }
+        }),
+      };
+      await upsertCharacter(newCharacter);
+      setCharacter(newCharacter);
+    }
   };
 
   const resetSpellSlot = async (character: Character) => {
     const currentSpellSlots = getCurrentSpellSlots(character);
-      if (currentSpellSlots && currentSpellSlots.used > 0) {
-        const newSpellSlots: SpellSlotLevel = {
-          level: currentSpellSlots.level,
-          available: currentSpellSlots.available,
-          used: currentSpellSlots.used - 1,
-        };
-        const newCharacter: Character = {
-          ...character,
-          spellSlots: character.spellSlots.map((value) => {
-            if (value.level === newSpellSlots.level) {
-              return newSpellSlots;
-            } else {
-              return value;
-            }
-          }),
-        };
-        await upsertCharacter(newCharacter);
-        setCharacter(newCharacter);
-       }
+    if (currentSpellSlots && currentSpellSlots.used > 0) {
+      const newSpellSlots: SpellSlotLevel = {
+        level: currentSpellSlots.level,
+        available: currentSpellSlots.available,
+        used: currentSpellSlots.used - 1,
+      };
+      const newCharacter: Character = {
+        ...character,
+        spellSlots: character.spellSlots.map((value) => {
+          if (value.level === newSpellSlots.level) {
+            return newSpellSlots;
+          } else {
+            return value;
+          }
+        }),
+      };
+      await upsertCharacter(newCharacter);
+      setCharacter(newCharacter);
+    }
   };
 
   const handleSpellSlotClick = async (
