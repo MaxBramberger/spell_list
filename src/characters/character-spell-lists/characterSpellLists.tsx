@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import Icon from '@mdi/react';
-import { mdiChevronLeft } from '@mdi/js';
+import { mdiChevronLeft, mdiCloseCircleOutline } from '@mdi/js';
 import { Character, classIcons, Spell, SpellListType } from '../../db/Types';
 import './characterSpellLists.css';
 import '../../App.css';
@@ -27,6 +27,7 @@ import { combineLatest } from 'rxjs';
 import { CharacterSpellListMapper } from '../characterSpellListMapper';
 import SpellListSettings from './spellListSettings';
 import { SpellSlotControl } from './spellSlotControl';
+import ToggleButton from '../../shared/toggleButton';
 
 const tableFilters: {
   [K in SpellListType]: (x: Spell, char: Character) => boolean;
@@ -177,14 +178,9 @@ export function CharacterSpellLists() {
     setActiveTab(newValue);
   };
 
-  const handleKnownCheckBoxChange = async (
-    spell: Spell,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    event.stopPropagation();
-    const newValue = event.target.checked;
+  const handleKnownCheckBoxChange = async (spell: Spell, known: boolean) => {
     if (character) {
-      if (newValue) {
+      if (!known) {
         const spellIndexSet = new Set(character.knownSpellIndices).add(
           spell.index
         );
@@ -206,12 +202,10 @@ export function CharacterSpellLists() {
 
   const handlePreparedCheckBoxChange = async (
     spell: Spell,
-    event: React.ChangeEvent<HTMLInputElement>
+    prepared: boolean
   ) => {
-    event.stopPropagation();
-    const newValue = event.target.checked;
     if (character) {
-      if (newValue) {
+      if (!prepared) {
         const spellIndexSet = new Set(character.preparedSpellIndices).add(
           spell.index
         );
@@ -324,27 +318,44 @@ export function CharacterSpellLists() {
                     </TableCell>
 
                     <TableCell>
-                      {showPreparedCheckBox && (
-                        <Checkbox
-                          size="small"
-                          checked={item.prepared}
-                          onChange={(e) =>
-                            handlePreparedCheckBoxChange(item, e)
-                          }
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      )}
-                    </TableCell>
-
-                    <TableCell>
-                      {showKnownCheckBox && (
-                        <Checkbox
-                          size="small"
-                          checked={item.known}
-                          onChange={(e) => handleKnownCheckBoxChange(item, e)}
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      )}
+                      <div className="button-container">
+                        {showPreparedCheckBox && activeTab === 'Known' && (
+                          <ToggleButton
+                            text="Prepared"
+                            toggled={item.prepared}
+                            callback={() =>
+                              handlePreparedCheckBoxChange(item, item.prepared)
+                            }
+                          />
+                        )}
+                        {showKnownCheckBox &&
+                          activeTab !== 'Prepared' &&
+                          activeTab !== 'Known' && (
+                            <ToggleButton
+                              text="Known"
+                              toggled={item.known}
+                              callback={() =>
+                                handleKnownCheckBoxChange(item, item.known)
+                              }
+                            />
+                          )}
+                        {activeTab !== 'All' && activeTab !== 'Class' && (
+                          <IconButton
+                            color={'primary'}
+                            className="icon-button"
+                            onClick={async ($event) => {
+                              $event.stopPropagation();
+                              if (activeTab === 'Prepared') {
+                                await handlePreparedCheckBoxChange(item, true);
+                              } else {
+                                await handleKnownCheckBoxChange(item, true);
+                              }
+                            }}
+                          >
+                            <Icon path={mdiCloseCircleOutline} size={1}></Icon>
+                          </IconButton>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 );

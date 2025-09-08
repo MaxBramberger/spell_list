@@ -32,3 +32,9 @@ tr.level-header{
 .tag{
     font-style: italic;
 }
+
+.button-container{
+    display: flex;
+    gap: 2px;
+    align-items: center;
+}
