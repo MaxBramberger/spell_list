@@ -11,26 +11,6 @@ export interface SpellSlotControlInput {
   slotLevel: number;
 }
 
-const markSpellSlotUsed = async (character: Character) => {
-  const newCharacter: Character = {
-    ...character,
-    spellSlots: [],
-  };
-  // TODO: Bäda implements logic
-
-  //await upsertCharacter(newCharacter);
-};
-
-const resetSpellSlot = async (character: Character) => {
-  const newCharacter: Character = {
-    ...character,
-    spellSlots: [],
-  };
-  // TODO: Bäda implements logic
-
-  //await upsertCharacter(newCharacter);
-};
-
 export const SpellSlotControl = (input: SpellSlotControlInput) => {
   const [character, setCharacter] = useState<Character | undefined>(undefined);
 
@@ -98,6 +78,26 @@ export const SpellSlotControl = (input: SpellSlotControlInput) => {
       await upsertCharacter(newCharacter);
       setCharacter(newCharacter);
     }
+  };
+
+  const markSpellSlotUsed = async (character: Character) => {
+    const newCharacter: Character = {
+      ...character,
+      spellSlots: [],
+    };
+    // TODO: Bäda implements logic
+
+    //await upsertCharacter(newCharacter);
+  };
+
+  const resetSpellSlot = async (character: Character) => {
+    const newCharacter: Character = {
+      ...character,
+      spellSlots: [],
+    };
+    // TODO: Bäda implements logic
+
+    //await upsertCharacter(newCharacter);
   };
 
   const handleSpellSlotClick = async (
