@@ -9,18 +9,23 @@ import {
   Slide,
 } from '@mui/material';
 import Icon from '@mdi/react';
-import { mdiCancel, mdiCog, mdiDownload, mdiUpload } from '@mdi/js';
+import { mdiCancel, mdiCog, mdiDownload, mdiUpload, mdiWeatherNight } from '@mdi/js';
 import {
   clearSpellList,
   fetchSpells,
   getSpellList$,
   importSpells,
 } from '../../service/SpellListService';
-import { Spell } from '../../db/Types';
+import { Character, Spell } from '../../db/Types';
 import ConfirmationDialog from '../../dialog/confirmationDialog';
 import './spellListSettings.css';
+import { upsertCharacter } from '../../service/CharacterService';
 
-const SpellListSettings: React.FC = () => {
+interface SpellListSettingsParam{
+  character?: Character
+}
+
+const SpellListSettings: React.FC<SpellListSettingsParam> = (param: SpellListSettingsParam) => {
   const [open, setOpen] = useState<boolean>(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -52,6 +57,15 @@ const SpellListSettings: React.FC = () => {
       fileInput.click(); // Trigger file input click
     }
   };
+
+  const longRest = async (): Promise<void> => {
+    if (param.character) {
+    const newCharacter: Character = {...param.character, spellSlots: param.character.spellSlots.map(spellSlotLevel => {
+      return {...spellSlotLevel, used: 0}
+    })};
+    await upsertCharacter(newCharacter);
+    }
+  }
 
   const handleFileImport = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -144,6 +158,14 @@ const SpellListSettings: React.FC = () => {
                   label="Import Spells"
                   onClick={uploadSpellList}
                 />
+                {
+                  param.character &&
+                  <ButtonRow
+                  icon={<Icon path={mdiWeatherNight} size={1} />}
+                  label="Long rest"
+                  onClick={longRest}
+                />
+                }
                 <input
                   type="file"
                   id="fileInput"
