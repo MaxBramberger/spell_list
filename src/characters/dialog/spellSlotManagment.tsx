@@ -13,7 +13,7 @@ interface SpellSlotManagementParams {
   character?: Character;
 }
 
-function getMaxLevel(character: Character | undefined) {
+export function getMaxLevel(character: Character | undefined) {
   if (!character) {
     return 0;
   } else {
@@ -44,6 +44,7 @@ const SpellSlotManagement: React.FC<SpellSlotManagementParams> = (
       );
       return () => subscription.unsubscribe();
     }
+    // eslint-disable-next-line
   }, [open]);
 
   const longRest = async (): Promise<void> => {

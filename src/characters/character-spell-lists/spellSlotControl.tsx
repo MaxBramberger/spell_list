@@ -12,10 +12,12 @@ export interface SpellSlotControlInput {
 }
 
 export const SpellSlotControl = (input: SpellSlotControlInput) => {
-  const [character, setCharacter] = useState<Character | undefined>(undefined);
+  const [character, setCharacter] = useState<Character | undefined>(
+    input.character
+  );
 
   useEffect(() => {
-    const subscription = getCharacter$(input.character.uuid).subscribe(
+    const subscription = getCharacter$(character!.uuid).subscribe(
       (charFromDb) => {
         setCharacter(charFromDb);
       }
@@ -44,8 +46,8 @@ export const SpellSlotControl = (input: SpellSlotControlInput) => {
             }
           }),
         };
-        await upsertCharacter(newCharacter);
         setCharacter(newCharacter);
+        await upsertCharacter(newCharacter);
       }
     }
   };
@@ -75,8 +77,8 @@ export const SpellSlotControl = (input: SpellSlotControlInput) => {
           }
         }),
       };
-      await upsertCharacter(newCharacter);
       setCharacter(newCharacter);
+      await upsertCharacter(newCharacter);
     }
   };
 
@@ -101,8 +103,8 @@ export const SpellSlotControl = (input: SpellSlotControlInput) => {
           }
         }),
       };
-      await upsertCharacter(newCharacter);
       setCharacter(newCharacter);
+      await upsertCharacter(newCharacter);
     }
   };
 

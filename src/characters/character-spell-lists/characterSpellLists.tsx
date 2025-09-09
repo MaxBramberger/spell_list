@@ -26,7 +26,7 @@ import { combineLatest } from 'rxjs';
 import { CharacterSpellListMapper } from '../characterSpellListMapper';
 import { SpellSlotControl } from './spellSlotControl';
 import ToggleButton from '../../shared/toggleButton';
-import SpellSlotManagement from '../dialog/spellSlotManagment';
+import SpellSlotManagement, { getMaxLevel } from '../dialog/spellSlotManagment';
 
 const tableFilters: {
   [K in SpellListType]: (x: Spell, char: Character) => boolean;
@@ -104,6 +104,17 @@ export function CharacterSpellLists() {
     }
     setTableInitialized(true);
   }, [location, tableRef, displayedSpells, tableInitialized]);
+
+  useEffect(() => {
+    if (character) {
+      const subscription = getCharacter$(character.uuid).subscribe(
+        (charFromDb) => {
+          setCharacter(charFromDb);
+        }
+      );
+      return () => subscription.unsubscribe();
+    }
+  }, [character]);
 
   const checkTableInit = () => {
     if (tableRef.current?.scrollTop === location.state?.spellListScrollTop) {
@@ -276,12 +287,18 @@ export function CharacterSpellLists() {
               (previous: ReactElement[], item, currentIndex, someArray) => {
                 const previousSpell = displayedSpells[currentIndex - 1];
                 if (previousSpell && previousSpell.level !== item.level) {
-                  previous.push(
-                    <SpellSlotControl
-                      character={character!}
-                      slotLevel={item.level}
-                    ></SpellSlotControl>
-                  );
+                  for (
+                    let levelDiff = 1;
+                    levelDiff <= item.level - previousSpell.level;
+                    levelDiff++
+                  ) {
+                    previous.push(
+                      <SpellSlotControl
+                        character={character!}
+                        slotLevel={previousSpell.level + levelDiff}
+                      ></SpellSlotControl>
+                    );
+                  }
                 } else if (!previousSpell) {
                   previous.push(
                     <SpellSlotControl
@@ -345,6 +362,23 @@ export function CharacterSpellLists() {
                     </TableCell>
                   </TableRow>
                 );
+                if (currentIndex === someArray.length - 1 && character) {
+                  const maxLevel = getMaxLevel(character);
+                  character.spellSlots.forEach((spellSlotLevel) => {
+                    if (
+                      spellSlotLevel.level > item.level &&
+                      spellSlotLevel.level <= maxLevel
+                    ) {
+                      previous.push(
+                        <SpellSlotControl
+                          character={character}
+                          slotLevel={spellSlotLevel.level}
+                        />
+                      );
+                    }
+                  });
+                }
+
                 return previous;
               },
               []
