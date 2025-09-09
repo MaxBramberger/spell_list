@@ -1,39 +1,26 @@
 import React, { useState } from 'react';
-import {
-  IconButton,
-  Backdrop,
-  Stack,
-  Box,
-  ButtonBase,
-  Typography,
-  Slide,
-} from '@mui/material';
+import { IconButton, Backdrop, Stack, Box, Slide } from '@mui/material';
 import Icon from '@mdi/react';
 import {
+  mdiAccountArrowUp,
   mdiCancel,
   mdiCog,
   mdiDownload,
   mdiUpload,
-  mdiWeatherNight,
 } from '@mdi/js';
 import {
   clearSpellList,
   getSpellList$,
   importSpells,
-} from '../../service/SpellListService';
-import { Character, Spell } from '../../db/Types';
-import ConfirmationDialog from '../../dialog/confirmationDialog';
-import './spellListSettings.css';
-import { getCharacter$, upsertCharacter } from '../../service/CharacterService';
+} from '../service/SpellListService';
+import { Spell } from '../db/Types';
+import ConfirmationDialog from '../dialog/confirmationDialog';
+import './settings.css';
 import { firstValueFrom } from 'rxjs';
+import ButtonRow from '../shared/buttonRow';
+import { handleCharacterFileImport } from '../importer/CharacterIO';
 
-interface SpellListSettingsParam {
-  character?: Character;
-}
-
-const SpellListSettings: React.FC<SpellListSettingsParam> = (
-  param: SpellListSettingsParam
-) => {
+const Settings: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -56,24 +43,16 @@ const SpellListSettings: React.FC<SpellListSettingsParam> = (
     }
   };
 
-  const longRest = async (): Promise<void> => {
-    if (param.character) {
-      const character = await firstValueFrom(
-        getCharacter$(param.character?.uuid)
-      );
-      if (character) {
-        const newCharacter: Character = {
-          ...character,
-          spellSlots: character.spellSlots.map((spellSlotLevel) => {
-            return { ...spellSlotLevel, used: 0 };
-          }),
-        };
-        await upsertCharacter(newCharacter);
-      }
+  const importCharacter = (): void => {
+    const fileInput = document.getElementById(
+      'characterInput'
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click(); // Trigger file input click
     }
   };
 
-  const handleFileImport = (
+  const handleSpellFileImport = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
     const file = event.target.files?.[0];
@@ -154,13 +133,18 @@ const SpellListSettings: React.FC<SpellListSettingsParam> = (
           <Box onClick={stopPropagation} className={'backdrop-box-outer'}>
             <Box onClick={stopPropagation} className={'backdrop-box-inner'}>
               <Stack spacing={1}>
-                {param.character && (
-                  <ButtonRow
-                    icon={<Icon path={mdiWeatherNight} size={1} />}
-                    label="Long rest"
-                    onClick={longRest}
-                  />
-                )}
+                <ButtonRow
+                  icon={<Icon path={mdiAccountArrowUp} size={1} />}
+                  label="Import Character"
+                  onClick={importCharacter}
+                />
+                <input
+                  type="file"
+                  id="characterInput"
+                  style={{ display: 'none' }}
+                  onChange={handleCharacterFileImport}
+                  accept=".json" // Restrict to certain file types
+                />
                 <ButtonRow
                   icon={<Icon path={mdiDownload} size={1} />}
                   label="Export Spells"
@@ -175,7 +159,7 @@ const SpellListSettings: React.FC<SpellListSettingsParam> = (
                   type="file"
                   id="fileInput"
                   style={{ display: 'none' }}
-                  onChange={handleFileImport}
+                  onChange={handleSpellFileImport}
                   accept=".json" // Restrict to certain file types
                 />
                 <ButtonRow
@@ -202,42 +186,4 @@ const SpellListSettings: React.FC<SpellListSettingsParam> = (
   );
 };
 
-type ButtonRowProps = {
-  icon: React.ReactNode;
-  label: string;
-  color?: string;
-  //eslint-disable-next-line
-  onClick?: (x: any) => void;
-};
-
-const ButtonRow: React.FC<ButtonRowProps> = ({
-  icon,
-  label,
-  color,
-  onClick,
-}) => {
-  return (
-    <ButtonBase
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        width: '100%',
-        justifyContent: 'flex-start',
-        p: 1.5,
-        borderRadius: 1,
-        '&:hover': {
-          backgroundColor: 'action.hover',
-        },
-        color: color ?? '',
-      }}
-      onClick={onClick}
-    >
-      <Box sx={{ mr: 2, height: 27 }}>{icon}</Box>
-      <Typography sx={{ height: 27 }} variant="body1">
-        {label}
-      </Typography>
-    </ButtonBase>
-  );
-};
-
-export default SpellListSettings;
+export default Settings;

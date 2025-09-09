@@ -27,7 +27,7 @@ tr.level-header{
         position: sticky;
         top: 0;
         z-index: 3;
-        background-color: white;
+        padding: 12px 16px 12px 16px;
 
         .spell-slot-control {
             width: 100%;

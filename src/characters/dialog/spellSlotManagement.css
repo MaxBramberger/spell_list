@@ -1,0 +1,25 @@
+.backdrop-box-inner {
+    tr {
+    display: flex;
+    height: 48px;
+        td{
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border: 0;
+        }
+    }
+}
+
+
+.backdrop-box-inner{
+    .controls {
+        display: flex;
+        flex-wrap: wrap;
+
+        button {
+            flex: 0 1 50%
+        }
+    }
+}

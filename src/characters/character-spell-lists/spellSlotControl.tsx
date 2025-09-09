@@ -21,7 +21,7 @@ export const SpellSlotControl = (input: SpellSlotControlInput) => {
       }
     );
     return () => subscription.unsubscribe();
-  }, [character]);
+  }, [input.character.uuid]);
 
   const addSpellSlot = async (event: MouseEvent) => {
     event.stopPropagation();
@@ -144,11 +144,11 @@ export const SpellSlotControl = (input: SpellSlotControlInput) => {
   };
 
   const addButtonDisabled = () => {
-    return character ? getCurrentSpellSlots(character)?.available == 4 : false;
+    return character ? getCurrentSpellSlots(character)?.available === 4 : false;
   };
 
   const removeButtonDisabled = () => {
-    return character ? getCurrentSpellSlots(character)?.available == 0 : false;
+    return character ? getCurrentSpellSlots(character)?.available === 0 : false;
   };
 
   const getCurrentSpellSlots = (char: Character) => {

@@ -26,7 +26,8 @@ import Icon from '@mdi/react';
 import './characterTable.css';
 import '../../App.css';
 import ConfirmationDialog from '../../dialog/confirmationDialog';
-import { CharacterExporter, CharacterImport } from '../../importer/CharacterIO';
+import { CharacterExporter } from '../../importer/CharacterIO';
+import Settings from '../../settings/settings';
 
 export const CharacterTable: React.FC = () => {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -36,9 +37,8 @@ export const CharacterTable: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
 
-  fetchCharacters();
-
   useEffect(() => {
+    fetchCharacters();
     const subscription = getCharacters$().subscribe(setCharacters); // Subscribe to the counter observable
 
     return () => subscription.unsubscribe(); // Cleanup subscription on unmount
@@ -80,7 +80,7 @@ export const CharacterTable: React.FC = () => {
           >
             <AddIcon />
           </IconButton>
-          <CharacterImport />
+          <Settings />
         </Toolbar>
       </AppBar>
 

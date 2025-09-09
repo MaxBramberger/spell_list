@@ -3,7 +3,6 @@ import { getCharacter$, upsertCharacter } from '../../service/CharacterService';
 import { useNavigate } from 'react-router-dom';
 import {
   AppBar,
-  Checkbox,
   IconButton,
   Paper,
   Tab,
@@ -25,9 +24,9 @@ import '../../App.css';
 import { fetchSpells, getSpellList$ } from '../../service/SpellListService';
 import { combineLatest } from 'rxjs';
 import { CharacterSpellListMapper } from '../characterSpellListMapper';
-import SpellListSettings from './spellListSettings';
 import { SpellSlotControl } from './spellSlotControl';
 import ToggleButton from '../../shared/toggleButton';
+import SpellSlotManagement from '../dialog/spellSlotManagment';
 
 const tableFilters: {
   [K in SpellListType]: (x: Spell, char: Character) => boolean;
@@ -109,18 +108,6 @@ export function CharacterSpellLists() {
   const checkTableInit = () => {
     if (tableRef.current?.scrollTop === location.state?.spellListScrollTop) {
       location.state = {};
-    }
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const scrollToRow = (key: string) => {
-    const rowRef = rowRefs.current.get(key);
-    if (rowRef) {
-      // Scroll to the row
-      rowRef.scrollIntoView({
-        behavior: 'auto',
-        block: 'center',
-      });
     }
   };
 
@@ -257,11 +244,11 @@ export function CharacterSpellLists() {
               : ''}{' '}
             {character?.name}
           </Typography>
-          <SpellListSettings character={character} />
+          <SpellSlotManagement character={character} />
         </Toolbar>
       </AppBar>
 
-      <Paper>
+      <Paper className="table-paper">
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
