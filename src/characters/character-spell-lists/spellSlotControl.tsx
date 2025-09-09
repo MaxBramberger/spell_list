@@ -21,7 +21,7 @@ export const SpellSlotControl = (input: SpellSlotControlInput) => {
       }
     );
     return () => subscription.unsubscribe();
-  }, [input.character.uuid]);
+  }, [character]);
 
   const addSpellSlot = async (event: MouseEvent) => {
     event.stopPropagation();

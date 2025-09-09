@@ -18,6 +18,7 @@ function getMaxLevel(character: Character | undefined) {
     return 0;
   } else {
     return Math.max(
+      0,
       ...character.spellSlots
         .filter((slotLevel) => slotLevel.available > 0)
         .map((slotLevel) => slotLevel.level)
@@ -34,8 +35,8 @@ const SpellSlotManagement: React.FC<SpellSlotManagementParams> = (
   );
 
   useEffect(() => {
-    if (param.character?.uuid) {
-      const subscription = getCharacter$(param.character?.uuid).subscribe(
+    if (param.character) {
+      const subscription = getCharacter$(param.character.uuid).subscribe(
         (char) => {
           console.log(char, getMaxLevel(char));
           setMaxLevel(getMaxLevel(char));
@@ -43,12 +44,12 @@ const SpellSlotManagement: React.FC<SpellSlotManagementParams> = (
       );
       return () => subscription.unsubscribe();
     }
-  }, [open, param.character?.uuid]);
+  }, [open]);
 
   const longRest = async (): Promise<void> => {
     if (param.character) {
       const character = await firstValueFrom(
-        getCharacter$(param.character?.uuid)
+        getCharacter$(param.character.uuid)
       );
       if (character) {
         const newCharacter: Character = {
@@ -69,7 +70,7 @@ const SpellSlotManagement: React.FC<SpellSlotManagementParams> = (
         const newChar: Character = {
           ...char,
           spellSlots: char.spellSlots.map((slotLevel) => {
-            if (slotLevel.level <= maxLevel) {
+            if (slotLevel.level < maxLevel) {
               return slotLevel;
             } else {
               return { level: slotLevel.level, used: 0, available: 0 };
