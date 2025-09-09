@@ -23,6 +23,8 @@ tr.level-header{
         top: 0;
         z-index: 3;
         background-color: white;
+        color: #1976d2;
+        font-weight: bold;
 
         .spell-slot-control {
             width: 100%;
@@ -37,6 +39,7 @@ tr.level-header{
     display: flex;
     gap: 2px;
     align-items: center;
+    justify-content: right;
 }
 
 button.MuiTab-root {

@@ -301,7 +301,6 @@ export function CharacterSpellLists() {
                     onClick={() => handleSpellClick(item)}
                     ref={(el) => rowRefs.current.set(item.index, el)}
                   >
-                    <TableCell></TableCell>
                     <TableCell>
                       {item.name}
                       {item.ritual && <sup className="tag">R</sup>}
@@ -310,7 +309,7 @@ export function CharacterSpellLists() {
 
                     <TableCell>
                       <div className="button-container">
-                        {showPreparedCheckBox && activeTab === 'Known' && (
+                        {showPreparedCheckBox && activeTab !== 'Prepared' && (
                           <ToggleButton
                             text="Prepared"
                             toggled={item.prepared}

@@ -160,7 +160,7 @@ export const SpellSlotControl = (input: SpellSlotControlInput) => {
 
   return (
     <TableRow className="level-header body-row">
-      <TableCell colSpan={3} className="spell-slot-control">
+      <TableCell colSpan={2} className="spell-slot-control">
         <div className="control-container">
           <div className="slot-title-container">
             {input.slotLevel !== 0 ? `Level: ${input.slotLevel}` : 'Cantrips'}
