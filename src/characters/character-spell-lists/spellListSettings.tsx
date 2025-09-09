@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   IconButton,
   Backdrop,
@@ -18,14 +18,14 @@ import {
 } from '@mdi/js';
 import {
   clearSpellList,
-  fetchSpells,
   getSpellList$,
   importSpells,
 } from '../../service/SpellListService';
 import { Character, Spell } from '../../db/Types';
 import ConfirmationDialog from '../../dialog/confirmationDialog';
 import './spellListSettings.css';
-import { upsertCharacter } from '../../service/CharacterService';
+import { getCharacter$, upsertCharacter } from '../../service/CharacterService';
+import { firstValueFrom } from 'rxjs';
 
 interface SpellListSettingsParam {
   character?: Character;
@@ -37,18 +37,8 @@ const SpellListSettings: React.FC<SpellListSettingsParam> = (
   const [open, setOpen] = useState<boolean>(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const [spells, setSpells] = useState<Spell[]>([]);
-
-  useEffect(() => {
-    fetchSpells();
-    const subscription = getSpellList$().subscribe((newSpells) => {
-      setSpells(newSpells);
-    });
-
-    return () => subscription.unsubscribe(); // Cleanup subscription on unmount
-  }, []);
-
-  const downloadSpellList = () => {
+  const downloadSpellList = async () => {
+    const spells = await firstValueFrom(getSpellList$());
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
       JSON.stringify(spells, null, 2)
     )}`;
@@ -68,13 +58,18 @@ const SpellListSettings: React.FC<SpellListSettingsParam> = (
 
   const longRest = async (): Promise<void> => {
     if (param.character) {
-      const newCharacter: Character = {
-        ...param.character,
-        spellSlots: param.character.spellSlots.map((spellSlotLevel) => {
-          return { ...spellSlotLevel, used: 0 };
-        }),
-      };
-      await upsertCharacter(newCharacter);
+      const character = await firstValueFrom(
+        getCharacter$(param.character?.uuid)
+      );
+      if (character) {
+        const newCharacter: Character = {
+          ...character,
+          spellSlots: character.spellSlots.map((spellSlotLevel) => {
+            return { ...spellSlotLevel, used: 0 };
+          }),
+        };
+        await upsertCharacter(newCharacter);
+      }
     }
   };
 
@@ -159,6 +154,13 @@ const SpellListSettings: React.FC<SpellListSettingsParam> = (
           <Box onClick={stopPropagation} className={'backdrop-box-outer'}>
             <Box onClick={stopPropagation} className={'backdrop-box-inner'}>
               <Stack spacing={1}>
+                {param.character && (
+                  <ButtonRow
+                    icon={<Icon path={mdiWeatherNight} size={1} />}
+                    label="Long rest"
+                    onClick={longRest}
+                  />
+                )}
                 <ButtonRow
                   icon={<Icon path={mdiDownload} size={1} />}
                   label="Export Spells"
@@ -169,13 +171,6 @@ const SpellListSettings: React.FC<SpellListSettingsParam> = (
                   label="Import Spells"
                   onClick={uploadSpellList}
                 />
-                {param.character && (
-                  <ButtonRow
-                    icon={<Icon path={mdiWeatherNight} size={1} />}
-                    label="Long rest"
-                    onClick={longRest}
-                  />
-                )}
                 <input
                   type="file"
                   id="fileInput"
