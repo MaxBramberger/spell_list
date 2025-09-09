@@ -1,9 +1,5 @@
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
-import {
-  fetchCharacters,
-  getCharacter$,
-  upsertCharacter,
-} from '../../service/CharacterService';
+import { getCharacter$, upsertCharacter } from '../../service/CharacterService';
 import { useNavigate } from 'react-router-dom';
 import {
   AppBar,
