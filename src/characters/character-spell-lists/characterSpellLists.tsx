@@ -20,7 +20,6 @@ import {
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import Icon from '@mdi/react';
 import {
-  mdiCancel,
   mdiChevronLeft,
   mdiClose,
   mdiCloseCircleOutline,
@@ -121,6 +120,11 @@ export function CharacterSpellLists() {
     ) {
       tableRef.current.scrollTop = location.state.spellListScrollTop;
     }
+    if (location.state?.searchString && !tableInitialized) {
+      setSearchBarExpanded(true);
+      setSearchString(location.state.searchString);
+    }
+
     setTableInitialized(true);
   }, [location, tableRef, displayedSpells, tableInitialized]);
 
@@ -265,7 +269,10 @@ export function CharacterSpellLists() {
     const charId = character?.uuid;
     if (charId) {
       navigate(`/spell/${item.index}?charId=${charId}&activeTab=${activeTab}`, {
-        state: { spellListScrollTop: tableRef.current.scrollTop },
+        state: {
+          spellListScrollTop: tableRef.current.scrollTop,
+          searchString: searchString,
+        },
       });
     } else {
       navigate(`/spell/${item.index}`);
