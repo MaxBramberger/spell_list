@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   AppBar,
   IconButton,
+  InputAdornment,
+  OutlinedInput,
   Paper,
   Tab,
   Table,
@@ -17,7 +19,13 @@ import {
 } from '@mui/material';
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import Icon from '@mdi/react';
-import { mdiChevronLeft, mdiCloseCircleOutline } from '@mdi/js';
+import {
+  mdiCancel,
+  mdiChevronLeft,
+  mdiClose,
+  mdiCloseCircleOutline,
+  mdiMagnify,
+} from '@mdi/js';
 import { Character, classIcons, Spell, SpellListType } from '../../db/Types';
 import './characterSpellLists.css';
 import '../../App.css';
@@ -54,9 +62,15 @@ interface SpellWithKnownAndPrepared extends Spell {
 function getDisplayedSpells(
   spells: Spell[],
   character: Character | undefined,
-  activeTab: SpellListType
+  activeTab: SpellListType,
+  searchString: string = ''
 ): SpellWithKnownAndPrepared[] {
   return spells
+    .filter((row) => {
+      return searchString
+        ? JSON.stringify(row).toLowerCase().includes(searchString.toLowerCase())
+        : true;
+    })
     .filter((row) =>
       character ? tableFilters[activeTab](row, character) : true
     )
@@ -92,6 +106,11 @@ export function CharacterSpellLists() {
     SpellWithKnownAndPrepared[]
   >([]);
 
+  const [searchBarExpanded, setSearchBarExpanded] = useState<boolean>(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const [searchString, setSearchString] = useState<string>('');
+
   const params = useParams();
   const [searchParams] = useSearchParams();
 
@@ -119,6 +138,23 @@ export function CharacterSpellLists() {
   const checkTableInit = () => {
     if (tableRef.current?.scrollTop === location.state?.spellListScrollTop) {
       location.state = {};
+    }
+  };
+
+  const toggleSearchBar = () => {
+    setSearchBarExpanded(!searchBarExpanded);
+    setSearchString('');
+
+    if (!searchBarExpanded) {
+      setTimeout(() => {
+        if (searchInputRef.current) {
+          const inputElement: HTMLInputElement | null =
+            searchInputRef.current.querySelector('input');
+          if (inputElement) {
+            inputElement.focus();
+          }
+        }
+      });
     }
   };
 
@@ -159,12 +195,12 @@ export function CharacterSpellLists() {
         );
       }
       setDisplayedSpells(
-        getDisplayedSpells(newSpells, newCharacter, activeTab)
+        getDisplayedSpells(newSpells, newCharacter, activeTab, searchString)
       );
     });
 
     return () => subscription.unsubscribe(); // Cleanup subscription on unmount
-  }, [params.id, activeTab, hasPreparedList, hasKnownList]);
+  }, [params.id, activeTab, hasPreparedList, hasKnownList, searchString]);
 
   const handleTabChange = (event: unknown, newValue: SpellListType) => {
     setShowKnownCheckBox(newValue !== 'Prepared' && hasKnownList);
@@ -172,7 +208,9 @@ export function CharacterSpellLists() {
       (newValue === 'Known' || newValue === 'Prepared' || !hasKnownList) &&
         hasPreparedList
     );
-    setDisplayedSpells(getDisplayedSpells(spells, character, newValue));
+    setDisplayedSpells(
+      getDisplayedSpells(spells, character, newValue, searchString)
+    );
     setActiveTab(newValue);
   };
 
@@ -194,7 +232,9 @@ export function CharacterSpellLists() {
         character.preparedSpellIndices = Array.from(preparedIndexSet);
         await upsertCharacter(character);
       }
-      setDisplayedSpells(getDisplayedSpells(spells, character, activeTab));
+      setDisplayedSpells(
+        getDisplayedSpells(spells, character, activeTab, searchString)
+      );
     }
   };
 
@@ -215,7 +255,9 @@ export function CharacterSpellLists() {
         character.preparedSpellIndices = Array.from(spellIndexSet.values());
         await upsertCharacter(character);
       }
-      setDisplayedSpells(getDisplayedSpells(spells, character, activeTab));
+      setDisplayedSpells(
+        getDisplayedSpells(spells, character, activeTab, searchString)
+      );
     }
   };
 
@@ -255,10 +297,36 @@ export function CharacterSpellLists() {
               : ''}{' '}
             {character?.name}
           </Typography>
+          <IconButton color="inherit" onClick={() => toggleSearchBar()}>
+            <Icon size={1} path={mdiMagnify}></Icon>
+          </IconButton>
           <SpellSlotManagement character={character} />
         </Toolbar>
       </AppBar>
-
+      {searchBarExpanded && (
+        <Paper>
+          <div className="searchbar-container">
+            <OutlinedInput
+              className="search-input"
+              ref={searchInputRef}
+              value={searchString}
+              onChange={(e) => setSearchString(e.target.value)}
+              startAdornment={
+                <InputAdornment position="start">
+                  <Icon className="search-icon" path={mdiMagnify} size={1} />
+                </InputAdornment>
+              }
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton onClick={() => toggleSearchBar()}>
+                    <Icon className="search-icon" path={mdiClose} size={1} />
+                  </IconButton>
+                </InputAdornment>
+              }
+            ></OutlinedInput>
+          </div>
+        </Paper>
+      )}
       <Paper className="table-paper">
         <Tabs
           value={activeTab}
