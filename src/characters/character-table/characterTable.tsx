@@ -15,26 +15,18 @@ import {
 } from '@mui/material';
 
 import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
 import {
-  deleteCharacter,
   fetchCharacters,
   getCharacters$,
 } from '../../service/CharacterService';
-import { Character, classIcons } from '../../db/Types';
-import Icon from '@mdi/react';
+import { Character } from '../../db/Types';
 import './characterTable.css';
 import '../../App.css';
-import ConfirmationDialog from '../../dialog/confirmationDialog';
-import { CharacterExporter } from '../../importer/CharacterIO';
 import Settings from '../../settings/settings';
+import { CharacterTableRow } from './characterTableRow';
 
 export const CharacterTable: React.FC = () => {
   const [characters, setCharacters] = useState<Character[]>([]);
-  const [dialogCharacter, setDialogCharacter] = useState<Character | undefined>(
-    undefined
-  );
-  const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,28 +35,6 @@ export const CharacterTable: React.FC = () => {
 
     return () => subscription.unsubscribe(); // Cleanup subscription on unmount
   }, []);
-
-  const handleRowClick = (row: Character) => {
-    navigate(`/character/${row.uuid}`);
-  };
-
-  const handleDeleteClick = async (row: Character, event: MouseEvent) => {
-    setDialogCharacter(row);
-    event.stopPropagation();
-    setDialogOpen(true);
-  };
-  const handleCloseDialog = () => {
-    setDialogCharacter(undefined);
-    setDialogOpen(false);
-  };
-
-  const handleConfirmAction = async () => {
-    setDialogOpen(false);
-    if (dialogCharacter) {
-      await deleteCharacter(dialogCharacter.uuid);
-    }
-    fetchCharacters();
-  };
 
   return (
     <div className="page-container">
@@ -102,61 +72,11 @@ export const CharacterTable: React.FC = () => {
           </TableHead>
           <TableBody>
             {characters.map((character) => (
-              <TableRow
-                className="body-row"
-                key={character.uuid}
-                onClick={() => handleRowClick(character)}
-              >
-                <TableCell>
-                  {character.classes.map((characterClass) => (
-                    <Icon
-                      key={characterClass.name}
-                      className="class-icon"
-                      path={classIcons[characterClass.name]}
-                    ></Icon>
-                  ))}
-                </TableCell>
-                <TableCell>{character.name} </TableCell>
-                <TableCell>
-                  {character.classes
-                    .map((characterClass) => characterClass.name)
-                    .join(', ')}
-                </TableCell>
-                <TableCell onClick={(e) => e.stopPropagation()}>
-                  <CharacterExporter uuid={character.uuid} />
-                </TableCell>
-                <TableCell>
-                  {
-                    <div>
-                      <IconButton
-                        onClick={(e) =>
-                          handleDeleteClick(
-                            character,
-                            e as unknown as MouseEvent
-                          )
-                        }
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </div>
-                  }
-                </TableCell>
-              </TableRow>
+              <CharacterTableRow key={character.uuid} character={character} />
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-      <ConfirmationDialog
-        open={dialogOpen}
-        onClose={handleCloseDialog}
-        onConfirm={() => handleConfirmAction()}
-        title="Delete"
-        message={
-          dialogCharacter
-            ? `Are you sure you want to delete the character "${dialogCharacter.name}"?`
-            : ''
-        }
-      />
     </div>
   );
 };
