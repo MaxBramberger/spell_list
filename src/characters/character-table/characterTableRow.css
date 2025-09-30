@@ -1,0 +1,13 @@
+.icon-column {
+    width: 24px;
+}
+
+.button-column{
+    width: 40px
+}
+
+.name-column{
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

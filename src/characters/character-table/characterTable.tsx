@@ -66,7 +66,6 @@ export const CharacterTable: React.FC = () => {
               <TableCell></TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Class</TableCell>
-              <TableCell>Export</TableCell>
               <TableCell>Delete</TableCell>
             </TableRow>
           </TableHead>

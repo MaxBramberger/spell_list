@@ -97,26 +97,26 @@ interface CharacterExporterProps {
   uuid: string;
 }
 
+export const downloadCharacter = async (uuid: string) => {
+  const character = await firstValueFrom(getCharacter$(uuid));
+  if (character) {
+    const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
+      JSON.stringify(character, null, 2)
+    )}`;
+    const link = document.createElement('a');
+    link.href = jsonString;
+    link.download = 'character.json';
+
+    link.click();
+  }
+};
+
 export const CharacterExporter: React.FC<CharacterExporterProps> = ({
   uuid,
 }) => {
-  const downloadCharacter = async () => {
-    const character = await firstValueFrom(getCharacter$(uuid));
-    if (character) {
-      const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
-        JSON.stringify(character, null, 2)
-      )}`;
-      const link = document.createElement('a');
-      link.href = jsonString;
-      link.download = 'character.json';
-
-      link.click();
-    }
-  };
-
   return (
     <Tooltip title="Export character">
-      <IconButton color="inherit" onClick={downloadCharacter}>
+      <IconButton color="inherit" onClick={() => downloadCharacter(uuid)}>
         <Icon path={mdiDownload} size={1} color={'rgba(0, 0, 0, 0.54)'}></Icon>
       </IconButton>
     </Tooltip>

@@ -1,7 +1,6 @@
 import { IconButton, TableCell, TableRow } from '@mui/material';
 import Icon from '@mdi/react';
 import { Character, classIcons } from '../../db/Types';
-import { CharacterExporter } from '../../importer/CharacterIO';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useState } from 'react';
 import ConfirmationDialog from '../../dialog/confirmationDialog';
@@ -10,6 +9,7 @@ import {
   fetchCharacters,
 } from '../../service/CharacterService';
 import { useNavigate } from 'react-router-dom';
+import './characterTableRow.css';
 
 interface CharacterTableRowData {
   character: Character;
@@ -19,6 +19,7 @@ export const CharacterTableRow = (param: CharacterTableRowData) => {
   const [dialogCharacter, setDialogCharacter] = useState<Character | undefined>(
     undefined
   );
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -52,26 +53,29 @@ export const CharacterTableRow = (param: CharacterTableRowData) => {
       onClick={() => handleRowClick(param.character)}
     >
       <TableCell>
-        {param.character.classes.map((characterClass) => (
-          <Icon
-            key={characterClass.name}
-            className="class-icon"
-            path={classIcons[characterClass.name]}
-          ></Icon>
-        ))}
+        <div className="icon-column">
+          {param.character.classes.map((characterClass) => (
+            <Icon
+              key={characterClass.name}
+              className="class-icon"
+              path={classIcons[characterClass.name]}
+            ></Icon>
+          ))}
+        </div>
       </TableCell>
-      <TableCell>{param.character.name} </TableCell>
       <TableCell>
-        {param.character.classes
-          .map((characterClass) => characterClass.name)
-          .join(', ')}
+        <div className="name-column">{param.character.name}</div>
       </TableCell>
-      <TableCell onClick={(e) => e.stopPropagation()}>
-        <CharacterExporter uuid={param.character.uuid} />
+      <TableCell>
+        <div className="class-column">
+          {param.character.classes
+            .map((characterClass) => characterClass.name)
+            .join(', ')}
+        </div>
       </TableCell>
       <TableCell>
         {
-          <div>
+          <div className="button-column">
             <IconButton
               onClick={(e) =>
                 handleDeleteClick(param.character, e as unknown as MouseEvent)

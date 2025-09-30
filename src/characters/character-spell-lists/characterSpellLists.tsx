@@ -33,7 +33,7 @@ import { combineLatest } from 'rxjs';
 import { CharacterSpellListMapper } from '../characterSpellListMapper';
 import { SpellSlotControl } from './spellSlotControl';
 import ToggleButton from '../../shared/toggleButton';
-import SpellSlotManagement, { getMaxLevel } from '../dialog/spellSlotManagment';
+import CharacterSettings, { getMaxLevel } from '../dialog/characterSettings';
 
 const tableFilters: {
   [K in SpellListType]: (x: Spell, char: Character) => boolean;
@@ -292,7 +292,14 @@ export function CharacterSpellLists() {
           <IconButton color="inherit" onClick={() => navigate('/')}>
             <Icon path={mdiChevronLeft} size={1}></Icon>
           </IconButton>
-          <Typography variant="h6" style={{ flexGrow: 1 }}>
+          <Typography
+            variant="h6"
+            style={{
+              flexGrow: 1,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
             {character
               ? character.classes.map((characterClass) => (
                   <Icon
@@ -307,7 +314,7 @@ export function CharacterSpellLists() {
           <IconButton color="inherit" onClick={() => toggleSearchBar()}>
             <Icon size={1} path={mdiMagnify}></Icon>
           </IconButton>
-          <SpellSlotManagement character={character} />
+          <CharacterSettings character={character} />
         </Toolbar>
       </AppBar>
       {searchBarExpanded && (

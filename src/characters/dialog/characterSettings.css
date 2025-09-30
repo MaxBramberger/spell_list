@@ -12,8 +12,16 @@
             font-weight: normal;
         }
     }
+    max-height: 50vh;
+    overflow: auto;
 }
 
+.backdrop-box-inner {
+    h5 {
+        margin: 8px;
+        text-align: left
+    }
+}
 
 .backdrop-box-inner{
     .controls {
