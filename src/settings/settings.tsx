@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import {
   IconButton,
   Backdrop,
@@ -202,12 +202,21 @@ const Settings: React.FC = () => {
                     <Select
                       labelId="theme-mode-label"
                       value={appColor}
-                      onChange={(e: any) => handleAppColorChange(e)}
+                      //ty
+                      onChange={(
+                        e: any // eslint-disable-line @typescript-eslint/no-explicit-any
+                      ) =>
+                        handleAppColorChange(
+                          e as unknown as ChangeEvent<{ value: unknown }>
+                        )
+                      }
                       label="Theme Mode"
                       variant="standard"
                     >
                       {Object.values(PrimaryTheme).map((value) => (
-                        <MenuItem value={value}>{value}</MenuItem>
+                        <MenuItem key={value} value={value}>
+                          {value}
+                        </MenuItem>
                       ))}
                     </Select>
                   </FormControl>

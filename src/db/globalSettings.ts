@@ -17,7 +17,7 @@ export const DefaultDictKeys = {
   primaryTheme: 'primaryTheme',
 } as const;
 
-export type DefaultDictKeys = keyof typeof DefaultDictKeys;
+export type DefaultDictKeys = keyof typeof DefaultDictKeys; // eslint-disable-line @typescript-eslint/no-redeclare
 
 export type ColorTheme = 'light' | 'dark';
 export const PrimaryTheme = {
@@ -32,7 +32,7 @@ export const PrimaryTheme = {
   deepPurple: 'deepPurple',
 } as const;
 
-export type PrimaryTheme = keyof typeof PrimaryTheme;
+export type PrimaryTheme = keyof typeof PrimaryTheme; // eslint-disable-line @typescript-eslint/no-redeclare
 
 const DEFAULT_SETTINGS: { [K in DefaultDictKeys]: ColorTheme | PrimaryTheme } =
   {
