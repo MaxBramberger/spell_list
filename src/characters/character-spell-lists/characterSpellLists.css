@@ -22,8 +22,6 @@ tr.level-header{
         position: sticky;
         top: 0;
         z-index: 3;
-        background-color: white;
-        color: #1976d2;
         font-weight: bold;
 
         .spell-slot-control {
@@ -60,7 +58,6 @@ div.searchbar-container {
     padding: 4px 8px 4px 8px;
 
     .search-icon {
-        color: #1976d2;
         padding-left: 4px;
     }
 

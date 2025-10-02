@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
-import { IconButton, Backdrop, Stack, Box, Slide } from '@mui/material';
+import {
+  IconButton,
+  Backdrop,
+  Stack,
+  Box,
+  Slide,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormControl,
+  Select,
+  MenuItem,
+} from '@mui/material';
 import Icon from '@mdi/react';
 import {
   mdiAccountArrowUp,
@@ -19,10 +31,13 @@ import './settings.css';
 import { firstValueFrom } from 'rxjs';
 import ButtonRow from '../shared/buttonRow';
 import { handleCharacterFileImport } from '../importer/CharacterIO';
+import { useThemeMode } from '../context/theme.context';
+import { PrimaryTheme } from '../db/globalSettings';
 
 const Settings: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const { mode, toggleMode, appColor, setPrimaryColor } = useThemeMode();
 
   const downloadSpellList = async () => {
     const spells = await firstValueFrom(getSpellList$());
@@ -102,6 +117,12 @@ const Settings: React.FC = () => {
     setOpen(false);
   };
 
+  const handleAppColorChange = async (
+    event: React.ChangeEvent<{ value: unknown }>
+  ) => {
+    setPrimaryColor(event.target.value as PrimaryTheme);
+  };
+
   const handleDeleteDialogClose = () => {
     setDeleteDialogOpen(false);
   };
@@ -130,8 +151,69 @@ const Settings: React.FC = () => {
         className={'backdrop'}
       >
         <Slide direction="up" in={open} mountOnEnter unmountOnExit>
-          <Box onClick={stopPropagation} className={'backdrop-box-outer'}>
-            <Box onClick={stopPropagation} className={'backdrop-box-inner'}>
+          <Box
+            onClick={stopPropagation}
+            className={'backdrop-box-outer'}
+            sx={{ bgcolor: 'background.default', color: 'text.primary' }}
+          >
+            <Box
+              onClick={stopPropagation}
+              className={'backdrop-box-inner'}
+              sx={{ bgcolor: 'background.default' }}
+            >
+              <h5>Customization</h5>
+              <Stack spacing={1}>
+                <p
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    fontSize: '1rem',
+                    paddingLeft: '1em',
+                    paddingRight: '1em',
+                  }}
+                >
+                  <div>Theme Mode</div>
+                  <RadioGroup row value={mode} onChange={toggleMode}>
+                    <FormControlLabel
+                      value="light"
+                      control={<Radio />}
+                      label="Light"
+                    />
+                    <FormControlLabel
+                      value="dark"
+                      control={<Radio />}
+                      label="Dark"
+                    />
+                  </RadioGroup>
+                </p>
+                <p
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    fontSize: '1rem',
+                    paddingLeft: '1em',
+                    paddingRight: '1em',
+                  }}
+                >
+                  <div>App Color</div>
+                  <FormControl size="small" sx={{ minWidth: 120 }}>
+                    <Select
+                      labelId="theme-mode-label"
+                      value={appColor}
+                      onChange={(e: any) => handleAppColorChange(e)}
+                      label="Theme Mode"
+                      variant="standard"
+                    >
+                      {Object.values(PrimaryTheme).map((value) => (
+                        <MenuItem value={value}>{value}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </p>
+              </Stack>
+              <h5>Data</h5>
               <Stack spacing={1}>
                 <ButtonRow
                   icon={<Icon path={mdiAccountArrowUp} size={1} />}

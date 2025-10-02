@@ -326,13 +326,16 @@ export function CharacterSpellLists() {
               value={searchString}
               onChange={(e) => setSearchString(e.target.value)}
               startAdornment={
-                <InputAdornment position="start">
+                <InputAdornment position="start" sx={{ color: 'primary.main' }}>
                   <Icon className="search-icon" path={mdiMagnify} size={1} />
                 </InputAdornment>
               }
               endAdornment={
                 <InputAdornment position="end">
-                  <IconButton onClick={() => toggleSearchBar()}>
+                  <IconButton
+                    onClick={() => toggleSearchBar()}
+                    sx={{ color: 'primary.main' }}
+                  >
                     <Icon className="search-icon" path={mdiClose} size={1} />
                   </IconButton>
                 </InputAdornment>

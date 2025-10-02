@@ -20,12 +20,7 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
   overflow: hidden;
-}
-
-.App-link {
-  color: #61dafb;
 }
 
 @keyframes App-logo-spin {
@@ -38,11 +33,9 @@
 }
 
 nav {
-  background-color: #282c34;
   padding: 1rem;
 }
 nav a {
-  color: white;
   margin: 0 1rem;
   text-decoration: none;
 }

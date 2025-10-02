@@ -1,9 +1,10 @@
 import Dexie, { Table } from 'dexie';
-import { Character, initialSpellSlots, Spell } from './Types';
+import { Character, GlobalSetting, initialSpellSlots, Spell } from './Types';
 
 class SpellDatabase extends Dexie {
   spells!: Table<Spell, string>; // Table name and primary key type
   characters!: Table<Character, string>;
+  globalSettings!: Table<GlobalSetting, string>;
 
   constructor() {
     super('SpellDatabase');
@@ -21,6 +22,9 @@ class SpellDatabase extends Dexie {
         .modify((character: any) => {
           character.spellSlots = initialSpellSlots;
         });
+    });
+    this.version(4).stores({
+      globalSettings: 'key, value',
     });
   }
 }

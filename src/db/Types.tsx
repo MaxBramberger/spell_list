@@ -114,3 +114,8 @@ export const initialSpellSlots: SpellSlotLevel[] = [
   { level: 8, used: 0, available: 0 },
   { level: 9, used: 0, available: 0 },
 ];
+
+export interface GlobalSetting {
+  key: string;
+  value: string;
+}

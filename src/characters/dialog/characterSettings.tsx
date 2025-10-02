@@ -182,8 +182,16 @@ const CharacterSettings: React.FC<SpellSlotManagementParams> = (
         className={'backdrop'}
       >
         <Slide direction="up" in={open} mountOnEnter unmountOnExit>
-          <Box onClick={stopPropagation} className={'backdrop-box-outer'}>
-            <Box onClick={stopPropagation} className={'backdrop-box-inner'}>
+          <Box
+            onClick={stopPropagation}
+            className={'backdrop-box-outer'}
+            sx={{ bgcolor: 'background.default', color: 'text.primary' }}
+          >
+            <Box
+              onClick={stopPropagation}
+              className={'backdrop-box-inner'}
+              sx={{ bgcolor: 'background.default' }}
+            >
               <h5>Spell Slot Management</h5>
               {param.character && (
                 <div>
