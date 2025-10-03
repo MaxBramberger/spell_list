@@ -25,7 +25,7 @@ import {
   mdiCloseCircleOutline,
   mdiMagnify,
 } from '@mdi/js';
-import { Character, classIcons, Spell, SpellListType } from '../../db/Types';
+import { Character, Spell, SpellListType } from '../../db/Types';
 import './characterSpellLists.css';
 import '../../App.css';
 import { fetchSpells, getSpellList$ } from '../../service/SpellListService';
@@ -34,6 +34,7 @@ import { CharacterSpellListMapper } from '../characterSpellListMapper';
 import { SpellSlotControl } from './spellSlotControl';
 import ToggleButton from '../../shared/toggleButton';
 import CharacterSettings, { getMaxLevel } from '../dialog/characterSettings';
+import { CharacterIcon } from '../characterIcon';
 
 const tableFilters: {
   [K in SpellListType]: (x: Spell, char: Character) => boolean;
@@ -67,7 +68,9 @@ function getDisplayedSpells(
   return spells
     .filter((row) => {
       return searchString
-        ? JSON.stringify(row).toLowerCase().includes(searchString.toLowerCase())
+        ? JSON.stringify(Object.values(row))
+            .toLowerCase()
+            .includes(searchString.toLowerCase())
         : true;
     })
     .filter((row) =>
@@ -298,17 +301,13 @@ export function CharacterSpellLists() {
               flexGrow: 1,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1em',
+              justifyContent: 'center',
             }}
           >
-            {character
-              ? character.classes.map((characterClass) => (
-                  <Icon
-                    key={characterClass.name}
-                    className="class-icon"
-                    path={classIcons[characterClass.name]}
-                  ></Icon>
-                ))
-              : ''}{' '}
+            {character ? <CharacterIcon character={character} /> : ''}
             {character?.name}
           </Typography>
           <IconButton color="inherit" onClick={() => toggleSearchBar()}>

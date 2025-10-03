@@ -1,6 +1,5 @@
 import { IconButton, TableCell, TableRow } from '@mui/material';
-import Icon from '@mdi/react';
-import { Character, classIcons } from '../../db/Types';
+import { Character } from '../../db/Types';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useState } from 'react';
 import ConfirmationDialog from '../../dialog/confirmationDialog';
@@ -10,6 +9,7 @@ import {
 } from '../../service/CharacterService';
 import { useNavigate } from 'react-router-dom';
 import './characterTableRow.css';
+import { CharacterIcon } from '../characterIcon';
 
 interface CharacterTableRowData {
   character: Character;
@@ -54,13 +54,7 @@ export const CharacterTableRow = (param: CharacterTableRowData) => {
     >
       <TableCell>
         <div className="icon-column">
-          {param.character.classes.map((characterClass) => (
-            <Icon
-              key={characterClass.name}
-              className="class-icon"
-              path={classIcons[characterClass.name]}
-            ></Icon>
-          ))}
+          <CharacterIcon character={param.character} />
         </div>
       </TableCell>
       <TableCell>

@@ -31,6 +31,7 @@ import { SpellSlotControl } from '../character-spell-lists/spellSlotControl';
 import ButtonRow from '../../shared/buttonRow';
 import './characterSettings.css';
 import { downloadCharacter } from '../../importer/CharacterIO';
+import ImageUploader from '../../shared/imageUploader';
 
 interface SpellSlotManagementParams {
   character?: Character;
@@ -167,6 +168,12 @@ const CharacterSettings: React.FC<SpellSlotManagementParams> = (
     setEditDialogOpen(false);
   };
 
+  const resetCharacterImage = async () => {
+    if (param.character) {
+      await upsertCharacter({ ...param.character, image: undefined });
+    }
+  };
+
   return (
     <>
       <IconButton onClick={handleToggle} color="inherit">
@@ -240,6 +247,20 @@ const CharacterSettings: React.FC<SpellSlotManagementParams> = (
                           setEditDialogOpen(true);
                         }}
                       />
+                      <div style={{ display: 'flex' }}>
+                        {param.character ? (
+                          <ImageUploader
+                            character={param.character}
+                          ></ImageUploader>
+                        ) : (
+                          ''
+                        )}
+                        <ButtonRow
+                          icon={<Icon path={mdiClose} size={1} />}
+                          label={'Reset Image'}
+                          onClick={() => resetCharacterImage()}
+                        ></ButtonRow>
+                      </div>
                     </div>
                   </Stack>
                 </div>

@@ -101,6 +101,7 @@ export interface Character {
   knownSpellIndices: string[];
   preparedSpellIndices: string[];
   spellSlots: SpellSlotLevel[];
+  image?: string;
 }
 
 export const initialSpellSlots: SpellSlotLevel[] = [
