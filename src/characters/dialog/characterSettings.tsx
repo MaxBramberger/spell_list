@@ -7,7 +7,8 @@ import {
   Slide,
   Dialog,
   OutlinedInput,
-  InputAdornment,
+  MenuItem,
+  Select,
 } from '@mui/material';
 import Icon from '@mdi/react';
 import {
@@ -20,7 +21,7 @@ import {
   mdiPlus,
   mdiWeatherNight,
 } from '@mdi/js';
-import { Character } from '../../db/Types';
+import { Character, CharacterClassName, charClassDict } from '../../db/Types';
 import {
   fetchCharacters,
   getCharacter$,
@@ -59,7 +60,11 @@ const CharacterSettings: React.FC<SpellSlotManagementParams> = (
   );
   const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
   const [textFieldString, setTextFieldString] = useState<string>('');
+  const [characterClasses, setCharacterClasses] = useState<
+    CharacterClassName[]
+  >([]);
   const editRef = useRef<HTMLInputElement>(null);
+  const classes = Object.values(charClassDict);
 
   useEffect(() => {
     if (param.character) {
@@ -68,6 +73,9 @@ const CharacterSettings: React.FC<SpellSlotManagementParams> = (
           console.log(char, getMaxLevel(char));
           setMaxLevel(getMaxLevel(char));
           setTextFieldString(char?.name ?? '');
+          setCharacterClasses(
+            char ? char.classes.map((charClass) => charClass.name) : []
+          );
         }
       );
       return () => subscription.unsubscribe();
@@ -148,23 +156,30 @@ const CharacterSettings: React.FC<SpellSlotManagementParams> = (
 
   const handleTextFieldKeydown = async (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
-      await confirmNameEdit();
+      await confirmEdit();
     } else if (e.key === 'Escape') {
-      cancelNameEdit();
+      cancelEdit();
     }
   };
 
-  const confirmNameEdit = async () => {
+  const confirmEdit = async () => {
     await upsertCharacter({
       ...(param.character as unknown as Character),
       name: textFieldString,
+      classes: characterClasses.map((charClass) => {
+        return { name: charClass, level: 1 };
+      }),
     });
     await fetchCharacters();
     setEditDialogOpen(false);
   };
 
-  const cancelNameEdit = () => {
-    setTextFieldString((param.character as unknown as Character).name);
+  const cancelEdit = () => {
+    const char = param.character as unknown as Character;
+    setTextFieldString(char.name);
+    setCharacterClasses(
+      char ? char.classes.map((charClass) => charClass.name) : []
+    );
     setEditDialogOpen(false);
   };
 
@@ -286,17 +301,41 @@ const CharacterSettings: React.FC<SpellSlotManagementParams> = (
             onKeyDown={(e) =>
               handleTextFieldKeydown(e as unknown as KeyboardEvent)
             }
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton onClick={() => confirmNameEdit()}>
-                  <Icon path={mdiCheck} size={1}></Icon>
-                </IconButton>
-                <IconButton onClick={() => cancelNameEdit()}>
-                  <Icon path={mdiClose} size={1}></Icon>
-                </IconButton>
-              </InputAdornment>
-            }
           ></OutlinedInput>
+          <h5 style={{ marginTop: '8px', marginBottom: '8px' }}>
+            Edit Character Class
+          </h5>
+          <Select
+            style={{ width: '100%' }}
+            labelId="character-class-label"
+            value={characterClasses}
+            onChange={(e) =>
+              setCharacterClasses(e.target.value as CharacterClassName[])
+            }
+            variant="outlined"
+            multiple
+          >
+            {classes.map((charClass) => (
+              <MenuItem key={charClass} value={charClass}>
+                {' '}
+                {charClass}
+              </MenuItem>
+            ))}
+          </Select>
+          <div style={{ display: 'flex', marginTop: '8px' }}>
+            <ButtonRow
+              justifyContent="center"
+              label=""
+              icon={<Icon path={mdiClose} size={1}></Icon>}
+              onClick={() => cancelEdit()}
+            />
+            <ButtonRow
+              justifyContent="center"
+              label=""
+              icon={<Icon path={mdiCheck} size={1}></Icon>}
+              onClick={() => confirmEdit()}
+            />
+          </div>
         </div>
       </Dialog>
     </>

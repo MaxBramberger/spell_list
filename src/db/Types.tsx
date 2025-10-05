@@ -86,7 +86,7 @@ export const spellKeyDict: { [K in keyof Spell]: K } = {
   subclasses: 'subclasses',
 };
 
-export type SpellListType = 'Known' | 'Prepared' | 'Class' | 'All';
+export type SpellListType = 'Known' | 'Prepared' | CharacterClassName | 'All';
 
 export interface SpellSlotLevel {
   level: number;

@@ -31,25 +31,27 @@ export const CreateCharacter: React.FC = () => {
   const [characterName, setCharacterName] = useState<string>('');
 
   // State to store the selected character class
-  const [characterClass, setCharacterClass] = useState<CharacterClassName | ''>(
-    ''
-  );
+  const [characterClasses, setCharacterClasses] = useState<
+    CharacterClassName[]
+  >([]);
 
   const classes = Object.values(charClassDict);
 
   const handleCreateCharacter = async () => {
-    if (characterName.trim() && characterClass) {
+    if (characterName.trim() && characterClasses) {
       const newUuid = uuidv4();
       await addCharacter({
         uuid: newUuid,
-        classes: [{ name: characterClass, level: 1 }],
+        classes: characterClasses.map((charClass) => {
+          return { name: charClass, level: 1 };
+        }),
         name: characterName,
         knownSpellIndices: [],
         preparedSpellIndices: [],
         spellSlots: initialSpellSlots,
       });
       setCharacterName('');
-      setCharacterClass('' as CharacterClassName);
+      setCharacterClasses([]);
       navigate('/');
     } else {
       alert('Please enter a valid character name and select a class.');
@@ -84,11 +86,12 @@ export const CreateCharacter: React.FC = () => {
           <InputLabel id="character-class-label">Character Class</InputLabel>
           <Select
             labelId="character-class-label"
-            value={characterClass}
+            value={characterClasses}
             onChange={(e) =>
-              setCharacterClass(e.target.value as CharacterClassName)
+              setCharacterClasses(e.target.value as CharacterClassName[])
             }
             variant="outlined"
+            multiple
           >
             {classes.map((charClass) => (
               <MenuItem key={charClass} value={charClass}>
@@ -102,7 +105,7 @@ export const CreateCharacter: React.FC = () => {
           variant="contained"
           color="primary"
           style={{ marginTop: '10px' }}
-          disabled={!characterClass || !characterName.trim()}
+          disabled={!characterClasses || !characterName.trim()}
           onClick={handleCreateCharacter}
         >
           Create Character

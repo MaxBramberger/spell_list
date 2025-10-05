@@ -25,7 +25,12 @@ import {
   mdiCloseCircleOutline,
   mdiMagnify,
 } from '@mdi/js';
-import { Character, Spell, SpellListType } from '../../db/Types';
+import {
+  Character,
+  CharacterClassName,
+  Spell,
+  SpellListType,
+} from '../../db/Types';
 import './characterSpellLists.css';
 import '../../App.css';
 import { fetchSpells, getSpellList$ } from '../../service/SpellListService';
@@ -36,14 +41,28 @@ import ToggleButton from '../../shared/toggleButton';
 import CharacterSettings, { getMaxLevel } from '../dialog/characterSettings';
 import { CharacterIcon } from '../characterIcon';
 
+const byClass =
+  (cls: CharacterClassName) =>
+  (spell: Spell): boolean =>
+    (spell.classes ?? []).includes(cls);
+
 const tableFilters: {
   [K in SpellListType]: (x: Spell, char: Character) => boolean;
 } = {
   All: () => true,
-  Class: (spell: Spell, char: Character) =>
-    spell.classes.some((spellClass) =>
-      char.classes.map((charClass) => charClass.name).includes(spellClass)
-    ),
+
+  // Class filters
+  Artificer: (spell: Spell) => byClass('Artificer')(spell),
+  Bard: (spell: Spell) => byClass('Bard')(spell),
+  Cleric: (spell: Spell) => byClass('Cleric')(spell),
+  Druid: (spell: Spell) => byClass('Druid')(spell),
+  Paladin: (spell: Spell) => byClass('Paladin')(spell),
+  Ranger: (spell: Spell) => byClass('Ranger')(spell),
+  Sorcerer: (spell: Spell) => byClass('Sorcerer')(spell),
+  Warlock: (spell: Spell) => byClass('Warlock')(spell),
+  Wizard: (spell: Spell) => byClass('Wizard')(spell),
+
+  // Character-based lists
   Known: (spell: Spell, char: Character) => {
     const knownList = char.knownSpellIndices;
     return knownList ? knownList.includes(spell.index) : false;
@@ -96,7 +115,7 @@ export function CharacterSpellLists() {
   const tableRef = useRef<any>(null);
   const location = useLocation();
 
-  const [activeTab, setActiveTab] = useState<SpellListType>('Class');
+  const [activeTab, setActiveTab] = useState<SpellListType>('All');
   const [character, setCharacter] = useState<Character>();
   const [spells, setSpells] = useState<Spell[]>([]);
   const [hasKnownList, setHasKnownList] = useState<boolean>(false);
@@ -347,13 +366,24 @@ export function CharacterSpellLists() {
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
+          variant="scrollable"
           indicatorColor="primary"
           textColor="primary"
           centered
         >
           {hasPreparedList && <Tab label="Prepared" value="Prepared" />}
           {hasKnownList && <Tab label="Known" value="Known" />}
-          <Tab label="Class" value="Class" />
+          {character
+            ? character.classes.map((charClass) => {
+                return (
+                  <Tab
+                    label={charClass.name}
+                    value={charClass.name}
+                    key={charClass.name}
+                  />
+                );
+              })
+            : ''}
           <Tab label="All" value="All" />
         </Tabs>
       </Paper>
@@ -426,7 +456,7 @@ export function CharacterSpellLists() {
                               }
                             />
                           )}
-                        {activeTab !== 'All' && activeTab !== 'Class' && (
+                        {['Known', 'Prepared'].includes(activeTab) && (
                           <IconButton
                             color={'primary'}
                             className="icon-button"
