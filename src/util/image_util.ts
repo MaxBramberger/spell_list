@@ -1,7 +1,7 @@
 export function downscaleImage(
   file: File,
-  maxWidth: number = 128,
-  maxHeight: number = 128
+  maxWidth: number = 512,
+  maxHeight: number = 512
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
