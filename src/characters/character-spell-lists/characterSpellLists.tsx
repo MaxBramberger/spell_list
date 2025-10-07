@@ -75,6 +75,47 @@ const tableFilters: {
   },
 };
 
+const toggleButtonConfig: {
+  [K in CharacterClassName]: { known: boolean; prepared: boolean };
+} = {
+  Artificer: {
+    known: false,
+    prepared: true,
+  },
+  Bard: {
+    known: true,
+    prepared: false,
+  },
+  Cleric: {
+    known: false,
+    prepared: true,
+  },
+  Druid: {
+    known: false,
+    prepared: true,
+  },
+  Paladin: {
+    known: false,
+    prepared: true,
+  },
+  Ranger: {
+    known: true,
+    prepared: false,
+  },
+  Sorcerer: {
+    known: true,
+    prepared: false,
+  },
+  Warlock: {
+    known: true,
+    prepared: false,
+  },
+  Wizard: {
+    known: true,
+    prepared: true,
+  },
+};
+
 interface SpellWithKnownAndPrepared extends Spell {
   known: boolean;
   prepared: boolean;
@@ -125,9 +166,6 @@ export function CharacterSpellLists() {
   const [spells, setSpells] = useState<Spell[]>([]);
   const [hasKnownList, setHasKnownList] = useState<boolean>(false);
   const [hasPreparedList, setHasPreparedList] = useState<boolean>(false);
-  const [showKnownCheckBox, setShowKnownCheckBox] = useState<boolean>(false);
-  const [showPreparedCheckBox, setShowPreparedCheckBox] =
-    useState<boolean>(false);
   const [displayedSpells, setDisplayedSpells] = useState<
     SpellWithKnownAndPrepared[]
   >([]);
@@ -216,11 +254,6 @@ export function CharacterSpellLists() {
       const spellLists = new CharacterSpellListMapper(character).getLists();
       setHasKnownList(spellLists.includes('Known'));
       setHasPreparedList(spellLists.includes('Prepared'));
-      setShowKnownCheckBox(activeTab !== 'Prepared' && hasKnownList);
-      setShowPreparedCheckBox(
-        (activeTab === 'Known' || activeTab === 'Prepared' || !hasKnownList) &&
-          hasPreparedList
-      );
     }
   }, [character, activeTab, hasKnownList, hasPreparedList]);
 
@@ -241,11 +274,6 @@ export function CharacterSpellLists() {
   }, [params.id, activeTab, searchString]);
 
   const handleTabChange = (event: unknown, newValue: SpellListType) => {
-    setShowKnownCheckBox(newValue !== 'Prepared' && hasKnownList);
-    setShowPreparedCheckBox(
-      (newValue === 'Known' || newValue === 'Prepared' || !hasKnownList) &&
-        hasPreparedList
-    );
     setDisplayedSpells(
       getDisplayedSpells(spells, character, newValue, searchString)
     );
@@ -457,42 +485,121 @@ export function CharacterSpellLists() {
 
                     <TableCell>
                       <div className="button-container">
-                        {showPreparedCheckBox && activeTab !== 'Prepared' && (
-                          <ToggleButton
-                            text="Prepared"
-                            toggled={item.prepared}
-                            callback={() =>
-                              handlePreparedCheckBoxChange(item, item.prepared)
-                            }
-                          />
-                        )}
-                        {showKnownCheckBox &&
-                          activeTab !== 'Prepared' &&
-                          activeTab !== 'Known' && (
-                            <ToggleButton
-                              text="Known"
-                              toggled={item.known}
-                              callback={() =>
-                                handleKnownCheckBoxChange(item, item.known)
-                              }
-                            />
-                          )}
-                        {['Known', 'Prepared'].includes(activeTab) && (
-                          <IconButton
-                            color={'primary'}
-                            className="icon-button"
-                            onClick={async ($event) => {
-                              $event.stopPropagation();
-                              if (activeTab === 'Prepared') {
-                                await handlePreparedCheckBoxChange(item, true);
-                              } else {
-                                await handleKnownCheckBoxChange(item, true);
-                              }
-                            }}
-                          >
-                            <Icon path={mdiCloseCircleOutline} size={1}></Icon>
-                          </IconButton>
-                        )}
+                        {(() => {
+                          switch (activeTab) {
+                            case 'All':
+                              return (
+                                <>
+                                  {hasPreparedList && (
+                                    <ToggleButton
+                                      text="Prepared"
+                                      toggled={item.prepared}
+                                      callback={() =>
+                                        handlePreparedCheckBoxChange(
+                                          item,
+                                          item.prepared
+                                        )
+                                      }
+                                    />
+                                  )}
+                                  {hasKnownList && (
+                                    <ToggleButton
+                                      text="Known"
+                                      toggled={item.known}
+                                      callback={() =>
+                                        handleKnownCheckBoxChange(
+                                          item,
+                                          item.known
+                                        )
+                                      }
+                                    />
+                                  )}
+                                </>
+                              );
+                            case 'Known':
+                              return (
+                                <>
+                                  {hasPreparedList && (
+                                    <ToggleButton
+                                      text="Prepared"
+                                      toggled={item.prepared}
+                                      callback={() =>
+                                        handlePreparedCheckBoxChange(
+                                          item,
+                                          item.prepared
+                                        )
+                                      }
+                                    />
+                                  )}{' '}
+                                  <IconButton
+                                    color={'primary'}
+                                    className="icon-button"
+                                    onClick={async ($event) => {
+                                      $event.stopPropagation();
+                                      await handleKnownCheckBoxChange(
+                                        item,
+                                        true
+                                      );
+                                    }}
+                                  >
+                                    <Icon
+                                      path={mdiCloseCircleOutline}
+                                      size={1}
+                                    ></Icon>
+                                  </IconButton>
+                                </>
+                              );
+                            case 'Prepared':
+                              return (
+                                <>
+                                  <IconButton
+                                    color={'primary'}
+                                    className="icon-button"
+                                    onClick={async ($event) => {
+                                      $event.stopPropagation();
+                                      await handlePreparedCheckBoxChange(
+                                        item,
+                                        true
+                                      );
+                                    }}
+                                  >
+                                    <Icon
+                                      path={mdiCloseCircleOutline}
+                                      size={1}
+                                    ></Icon>
+                                  </IconButton>
+                                </>
+                              );
+                            default:
+                              return (
+                                <>
+                                  {toggleButtonConfig[activeTab].known ? (
+                                    <ToggleButton
+                                      text="Known"
+                                      toggled={item.known}
+                                      callback={() =>
+                                        handleKnownCheckBoxChange(
+                                          item,
+                                          item.known
+                                        )
+                                      }
+                                    />
+                                  ) : (
+                                    <ToggleButton
+                                      text="Prepared"
+                                      toggled={item.prepared}
+                                      callback={() =>
+                                        handlePreparedCheckBoxChange(
+                                          item,
+                                          item.prepared
+                                        )
+                                      }
+                                    />
+                                  )}
+                                </>
+                              );
+                          }
+                        })()}
                       </div>
                     </TableCell>
                   </TableRow>
