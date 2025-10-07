@@ -28,6 +28,7 @@ import {
 import {
   Character,
   CharacterClassName,
+  charClassDict,
   Spell,
   SpellListType,
 } from '../../db/Types';
@@ -192,7 +193,36 @@ export function CharacterSpellLists() {
       setActiveTabInit(true);
       setActiveTab(activeTabQueried as SpellListType);
     }
-  }, [hasKnownList, hasPreparedList, searchParams, character, activeTabInit]);
+    if (
+      character &&
+      Object.keys(charClassDict).includes(activeTab) &&
+      !character.classes
+        .map((charClass) => charClass.name as string)
+        .includes(activeTab)
+    ) {
+      setActiveTab('All');
+    }
+  }, [
+    hasKnownList,
+    hasPreparedList,
+    searchParams,
+    character,
+    activeTabInit,
+    activeTab,
+  ]);
+
+  useEffect(() => {
+    if (character) {
+      const spellLists = new CharacterSpellListMapper(character).getLists();
+      setHasKnownList(spellLists.includes('Known'));
+      setHasPreparedList(spellLists.includes('Prepared'));
+      setShowKnownCheckBox(activeTab !== 'Prepared' && hasKnownList);
+      setShowPreparedCheckBox(
+        (activeTab === 'Known' || activeTab === 'Prepared' || !hasKnownList) &&
+          hasPreparedList
+      );
+    }
+  }, [character]);
 
   useEffect(() => {
     fetchSpells();
