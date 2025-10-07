@@ -1,0 +1,11 @@
+.character-image {
+    border-radius: 50%;
+    max-width: 80vw;
+    max-height: 80vh;
+    width: auto;
+    height: auto;
+    object-fit: cover;
+    aspect-ratio: 1 / 1; /* Keeps it perfectly round */
+    display: block;
+    margin: auto; /* optional: center the image */
+}

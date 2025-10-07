@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Character, classIcons } from '../db/Types';
 import Icon from '@mdi/react';
 import { Backdrop } from '@mui/material';
+import './characterIcon.css';
 
 interface CharacterIconParam {
   character: Character;
@@ -34,7 +35,7 @@ export const CharacterIcon: React.FC<CharacterIconParam> = ({ character }) => {
         <img
           src={character.image}
           alt="character"
-          style={{ width: '512px', height: '512px', borderRadius: '256px' }}
+          className="character-image"
           onClick={(event) => {
             event.stopPropagation();
           }}
