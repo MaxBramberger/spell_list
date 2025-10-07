@@ -182,6 +182,7 @@ export const SpellSlotControl = (input: SpellSlotControlInput) => {
                   checkBoxes.push(
                     <Checkbox
                       size="small"
+                      key={slot}
                       checked={slot <= currentSlots.used}
                       onChange={(e) => handleSpellSlotClick(e)}
                       onClick={(e) => e.stopPropagation()}

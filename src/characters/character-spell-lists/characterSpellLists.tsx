@@ -40,6 +40,7 @@ import { SpellSlotControl } from './spellSlotControl';
 import ToggleButton from '../../shared/toggleButton';
 import CharacterSettings, { getMaxLevel } from '../dialog/characterSettings';
 import { CharacterIcon } from '../characterIcon';
+import { useCharacter } from '../../context/character.context';
 
 const byClass =
   (cls: CharacterClassName) =>
@@ -116,7 +117,10 @@ export function CharacterSpellLists() {
   const location = useLocation();
 
   const [activeTab, setActiveTab] = useState<SpellListType>('All');
-  const [character, setCharacter] = useState<Character>();
+  const [activeTabInit, setActiveTabInit] = useState<boolean>(false);
+
+  const { character } = useCharacter();
+
   const [spells, setSpells] = useState<Spell[]>([]);
   const [hasKnownList, setHasKnownList] = useState<boolean>(false);
   const [hasPreparedList, setHasPreparedList] = useState<boolean>(false);
@@ -150,17 +154,6 @@ export function CharacterSpellLists() {
     setTableInitialized(true);
   }, [location, tableRef, displayedSpells, tableInitialized]);
 
-  useEffect(() => {
-    if (character) {
-      const subscription = getCharacter$(character.uuid).subscribe(
-        (charFromDb) => {
-          setCharacter(charFromDb);
-        }
-      );
-      return () => subscription.unsubscribe();
-    }
-  }, [character]);
-
   const checkTableInit = () => {
     if (tableRef.current?.scrollTop === location.state?.spellListScrollTop) {
       location.state = {};
@@ -186,16 +179,20 @@ export function CharacterSpellLists() {
 
   useEffect(() => {
     const activeTabQueried = searchParams.get('activeTab');
-    if (activeTabQueried) {
+    if (activeTabQueried && !activeTabInit) {
       if (activeTabQueried === 'Prepared' && !hasPreparedList) {
         return;
       }
       if (activeTabQueried === 'Known' && !hasKnownList) {
         return;
       }
+      if (!character) {
+        return;
+      }
+      setActiveTabInit(true);
       setActiveTab(activeTabQueried as SpellListType);
     }
-  }, [hasKnownList, hasPreparedList, searchParams]);
+  }, [hasKnownList, hasPreparedList, searchParams, character, activeTabInit]);
 
   useEffect(() => {
     fetchSpells();
@@ -205,7 +202,6 @@ export function CharacterSpellLists() {
       getSpellList$(),
     ]).subscribe(([newCharacter, newSpells]) => {
       setSpells(newSpells);
-      setCharacter(newCharacter);
       if (newCharacter) {
         const spellLists = new CharacterSpellListMapper(
           newCharacter
@@ -332,7 +328,7 @@ export function CharacterSpellLists() {
           <IconButton color="inherit" onClick={() => toggleSearchBar()}>
             <Icon size={1} path={mdiMagnify}></Icon>
           </IconButton>
-          <CharacterSettings character={character} />
+          <CharacterSettings />
         </Toolbar>
       </AppBar>
       {searchBarExpanded && (
@@ -369,7 +365,6 @@ export function CharacterSpellLists() {
           variant="scrollable"
           indicatorColor="primary"
           textColor="primary"
-          centered
         >
           {hasPreparedList && <Tab label="Prepared" value="Prepared" />}
           {hasKnownList && <Tab label="Known" value="Known" />}
@@ -407,18 +402,28 @@ export function CharacterSpellLists() {
                     levelDiff++
                   ) {
                     previous.push(
-                      <SpellSlotControl
-                        character={character!}
-                        slotLevel={previousSpell.level + levelDiff}
-                      ></SpellSlotControl>
+                      character ? (
+                        <SpellSlotControl
+                          key={previousSpell.level + levelDiff}
+                          character={character}
+                          slotLevel={previousSpell.level + levelDiff}
+                        ></SpellSlotControl>
+                      ) : (
+                        <></>
+                      )
                     );
                   }
                 } else if (!previousSpell) {
                   previous.push(
-                    <SpellSlotControl
-                      character={character!}
-                      slotLevel={item.level}
-                    ></SpellSlotControl>
+                    character ? (
+                      <SpellSlotControl
+                        key={item.level}
+                        character={character}
+                        slotLevel={item.level}
+                      ></SpellSlotControl>
+                    ) : (
+                      <></>
+                    )
                   );
                 }
                 previous.push(
@@ -485,6 +490,7 @@ export function CharacterSpellLists() {
                     ) {
                       previous.push(
                         <SpellSlotControl
+                          key={spellSlotLevel.level}
                           character={character}
                           slotLevel={spellSlotLevel.level}
                         />

@@ -22,21 +22,12 @@ import {
   mdiWeatherNight,
 } from '@mdi/js';
 import { Character, CharacterClassName, charClassDict } from '../../db/Types';
-import {
-  fetchCharacters,
-  getCharacter$,
-  upsertCharacter,
-} from '../../service/CharacterService';
-import { firstValueFrom } from 'rxjs';
 import { SpellSlotControl } from '../character-spell-lists/spellSlotControl';
 import ButtonRow from '../../shared/buttonRow';
 import './characterSettings.css';
 import { downloadCharacter } from '../../importer/CharacterIO';
 import ImageUploader from '../../shared/imageUploader';
-
-interface SpellSlotManagementParams {
-  character?: Character;
-}
+import { useCharacter } from '../../context/character.context';
 
 export function getMaxLevel(character: Character | undefined) {
   if (!character) {
@@ -51,13 +42,12 @@ export function getMaxLevel(character: Character | undefined) {
   }
 }
 
-const CharacterSettings: React.FC<SpellSlotManagementParams> = (
-  param: SpellSlotManagementParams
-) => {
+const CharacterSettings: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
-  const [maxLevel, setMaxLevel] = useState<number>(
-    getMaxLevel(param.character)
-  );
+
+  const { character, setCharacter } = useCharacter();
+
+  const [maxLevel, setMaxLevel] = useState<number>(getMaxLevel(character));
   const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
   const [textFieldString, setTextFieldString] = useState<string>('');
   const [characterClasses, setCharacterClasses] = useState<
@@ -67,57 +57,41 @@ const CharacterSettings: React.FC<SpellSlotManagementParams> = (
   const classes = Object.values(charClassDict);
 
   useEffect(() => {
-    if (param.character) {
-      const subscription = getCharacter$(param.character.uuid).subscribe(
-        (char) => {
-          console.log(char, getMaxLevel(char));
-          setMaxLevel(getMaxLevel(char));
-          setTextFieldString(char?.name ?? '');
-          setCharacterClasses(
-            char ? char.classes.map((charClass) => charClass.name) : []
-          );
-        }
-      );
-      return () => subscription.unsubscribe();
+    if (character) {
+      setMaxLevel(getMaxLevel(character));
+      setTextFieldString(character.name);
+      setCharacterClasses(character.classes.map((charClass) => charClass.name));
     }
     // eslint-disable-next-line
-  }, [open]);
+  }, [open, character]);
 
   const longRest = async (): Promise<void> => {
-    if (param.character) {
-      const character = await firstValueFrom(
-        getCharacter$(param.character.uuid)
-      );
-      if (character) {
-        const newCharacter: Character = {
-          ...character,
-          spellSlots: character.spellSlots.map((spellSlotLevel) => {
-            return { ...spellSlotLevel, used: 0 };
-          }),
-        };
-        await upsertCharacter(newCharacter);
-      }
+    if (character) {
+      const newCharacter: Character = {
+        ...character,
+        spellSlots: character.spellSlots.map((spellSlotLevel) => {
+          return { ...spellSlotLevel, used: 0 };
+        }),
+      };
+      await setCharacter(newCharacter);
     }
   };
 
   const lessLevels = async () => {
-    if (param.character) {
-      const char = await firstValueFrom(getCharacter$(param.character.uuid));
-      if (char) {
-        const newChar: Character = {
-          ...char,
-          spellSlots: char.spellSlots.map((slotLevel) => {
-            if (slotLevel.level < maxLevel) {
-              return slotLevel;
-            } else {
-              return { level: slotLevel.level, used: 0, available: 0 };
-            }
-          }),
-        };
-        await upsertCharacter(newChar);
-        if (maxLevel > 0) {
-          setMaxLevel(maxLevel - 1);
-        }
+    if (character) {
+      const newChar: Character = {
+        ...character,
+        spellSlots: character.spellSlots.map((slotLevel) => {
+          if (slotLevel.level < maxLevel) {
+            return slotLevel;
+          } else {
+            return { level: slotLevel.level, used: 0, available: 0 };
+          }
+        }),
+      };
+      await setCharacter(newChar);
+      if (maxLevel > 0) {
+        setMaxLevel(maxLevel - 1);
       }
     }
   };
@@ -163,29 +137,26 @@ const CharacterSettings: React.FC<SpellSlotManagementParams> = (
   };
 
   const confirmEdit = async () => {
-    await upsertCharacter({
-      ...(param.character as unknown as Character),
+    await setCharacter({
+      ...(character as unknown as Character),
       name: textFieldString,
       classes: characterClasses.map((charClass) => {
         return { name: charClass, level: 1 };
       }),
     });
-    await fetchCharacters();
     setEditDialogOpen(false);
   };
 
   const cancelEdit = () => {
-    const char = param.character as unknown as Character;
+    const char = character as unknown as Character;
     setTextFieldString(char.name);
-    setCharacterClasses(
-      char ? char.classes.map((charClass) => charClass.name) : []
-    );
+    setCharacterClasses(char.classes.map((charClass) => charClass.name));
     setEditDialogOpen(false);
   };
 
   const resetCharacterImage = async () => {
-    if (param.character) {
-      await upsertCharacter({ ...param.character, image: undefined });
+    if (character) {
+      await setCharacter({ ...character, image: undefined });
     }
   };
 
@@ -215,18 +186,20 @@ const CharacterSettings: React.FC<SpellSlotManagementParams> = (
               sx={{ bgcolor: 'background.default' }}
             >
               <h5>Spell Slot Management</h5>
-              {param.character && (
+              {character && (
                 <div>
                   <Stack spacing={1}>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9]
                       .filter((level) => level <= maxLevel)
                       .map((_, index) => {
-                        return (
+                        return character ? (
                           <SpellSlotControl
                             key={index}
                             slotLevel={index + 1}
-                            character={param.character!}
+                            character={character}
                           />
+                        ) : (
+                          <></>
                         );
                       })}
                     <div className="controls">
@@ -253,7 +226,7 @@ const CharacterSettings: React.FC<SpellSlotManagementParams> = (
                       <ButtonRow
                         icon={<Icon path={mdiDownload} size={1}></Icon>}
                         label={'Export Character'}
-                        onClick={() => downloadCharacter(param.character!.uuid)}
+                        onClick={() => downloadCharacter(character!.uuid)}
                       />
                       <ButtonRow
                         icon={<Icon path={mdiPencil} size={1}></Icon>}
@@ -263,10 +236,8 @@ const CharacterSettings: React.FC<SpellSlotManagementParams> = (
                         }}
                       />
                       <div style={{ display: 'flex' }}>
-                        {param.character ? (
-                          <ImageUploader
-                            character={param.character}
-                          ></ImageUploader>
+                        {character ? (
+                          <ImageUploader character={character}></ImageUploader>
                         ) : (
                           ''
                         )}
