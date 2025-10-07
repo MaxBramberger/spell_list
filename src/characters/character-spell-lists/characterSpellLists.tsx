@@ -222,7 +222,7 @@ export function CharacterSpellLists() {
           hasPreparedList
       );
     }
-  }, [character]);
+  }, [character, activeTab, hasKnownList, hasPreparedList]);
 
   useEffect(() => {
     fetchSpells();
@@ -232,27 +232,13 @@ export function CharacterSpellLists() {
       getSpellList$(),
     ]).subscribe(([newCharacter, newSpells]) => {
       setSpells(newSpells);
-      if (newCharacter) {
-        const spellLists = new CharacterSpellListMapper(
-          newCharacter
-        ).getLists();
-        setHasKnownList(spellLists.includes('Known'));
-        setHasPreparedList(spellLists.includes('Prepared'));
-        setShowKnownCheckBox(activeTab !== 'Prepared' && hasKnownList);
-        setShowPreparedCheckBox(
-          (activeTab === 'Known' ||
-            activeTab === 'Prepared' ||
-            !hasKnownList) &&
-            hasPreparedList
-        );
-      }
       setDisplayedSpells(
         getDisplayedSpells(newSpells, newCharacter, activeTab, searchString)
       );
     });
 
     return () => subscription.unsubscribe(); // Cleanup subscription on unmount
-  }, [params.id, activeTab, hasPreparedList, hasKnownList, searchString]);
+  }, [params.id, activeTab, searchString]);
 
   const handleTabChange = (event: unknown, newValue: SpellListType) => {
     setShowKnownCheckBox(newValue !== 'Prepared' && hasKnownList);
